@@ -1,6 +1,41 @@
 "use client";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 
 const kpis = [
+ const monthlyData = [
+  {
+    month: "Jan",
+    exception: 0.64,
+    irdr: 0.86,
+    lost: 0.086,
+  },
+  {
+    month: "Feb",
+    exception: 0.41,
+    irdr: 1.04,
+    lost: 0.052,
+  },
+  {
+    month: "Mar",
+    exception: 0.47,
+    irdr: 0.63,
+    lost: 0.032,
+  },
+  {
+    month: "Apr",
+    exception: 0.31,
+    irdr: 0.34,
+    lost: 0.011,
+  },
+];
   {
     title: "Exception Rate",
     value: "0.29%",
@@ -171,6 +206,43 @@ export default function Dashboard() {
           <li>Daily RCA routines implemented across all shifts</li>
         </ul>
       </div>
+          <div
+  style={{
+    marginTop: "40px",
+    background: "#0f172a",
+    border: "1px solid #1e293b",
+    borderRadius: "24px",
+    padding: "30px",
+    height: "420px",
+  }}
+>
+  <h2
+    style={{
+      marginBottom: "20px",
+      fontSize: "28px",
+    }}
+  >
+    Monthly KPI Evolution
+  </h2>
+
+  <ResponsiveContainer width="100%" height="85%">
+    <BarChart data={monthlyData}>
+      <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+
+      <XAxis dataKey="month" stroke="#94a3b8" />
+
+      <YAxis stroke="#94a3b8" />
+
+      <Tooltip />
+
+      <Bar dataKey="exception" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+
+      <Bar dataKey="irdr" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
+
+      <Bar dataKey="lost" fill="#ef4444" radius={[6, 6, 0, 0]} />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
     </main>
   );
 }
