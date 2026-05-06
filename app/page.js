@@ -2,7 +2,6 @@
 
 const kpis = [
   { title: "Capital Loss Rate", cluster: "LOST", area: "Loss", target: 0.095, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001, value: 0.001, direction: "lower" },
-  { title: "Operation Difference Rate", cluster: "EXCEPTION", area: "Operation", target: 0.27, jan: 0.06, feb: 0.05, mar: 0.05, apr: 0.06, value: 0.06, direction: "lower" },
   { title: "Exception Rate", cluster: "EXCEPTION", area: "Receiving", target: 0.96, jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31, value: 0.31, direction: "lower" },
   { title: "Empty Box", cluster: "EXCEPTION", area: "Receiving", target: 0.20, jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14, value: 0.14, direction: "lower" },
   { title: "Short Picking", cluster: "EXCEPTION", area: "Picking", target: 0.08, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05, value: 0.05, direction: "lower" },
