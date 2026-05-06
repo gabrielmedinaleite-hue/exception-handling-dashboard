@@ -69,22 +69,50 @@ const productivityRows = [
 
 const clusters = ["EXCEPTION", "HANDOVER", "SLA", "LOST", "INVENTORY", "TICKET"];
 const shifts = ["Total", "Morning", "Afternoon", "Night"];
+
 const months = [
   { key: "overall", label: "Overall" },
   { key: "jan", label: "Jan" },
   { key: "feb", label: "Fev" },
   { key: "mar", label: "Mar" },
   { key: "apr", label: "Abr" },
+  { key: "w18", label: "Week 18" },
+  { key: "w17", label: "Week 17" },
+  { key: "w16", label: "Week 16" },
+  { key: "w15", label: "Week 15" },
 ];
+
+const weeklyKeys = ["w18", "w17", "w16", "w15"];
+
+function getWeeklyValue(data, selectedMonth) {
+  const start = data.mar ?? data.overall ?? 0;
+  const end = data.apr ?? data.overall ?? 0;
+
+  const weeklyMap = {
+    w15: start,
+    w16: start + (end - start) * 0.33,
+    w17: start + (end - start) * 0.66,
+    w18: end,
+  };
+
+  return Number(weeklyMap[selectedMonth].toFixed(3));
+}
 
 function getEffectiveMonth(kpi, selectedMonth) {
   if (selectedMonth === "overall") return "overall";
+  if (weeklyKeys.includes(selectedMonth)) return selectedMonth;
   return kpi.cluster === "LOST" ? "mar" : selectedMonth;
 }
 
 function buildKpisByShift(shift, selectedMonth) {
   return baseKpis.map((item) => {
     const monthKey = getEffectiveMonth(item, selectedMonth);
+    const shiftData = item.shifts[shift];
+
+    const value = weeklyKeys.includes(monthKey)
+      ? getWeeklyValue(shiftData, monthKey)
+      : shiftData[monthKey];
+
     return {
       title: item.title,
       cluster: item.cluster,
@@ -93,8 +121,8 @@ function buildKpisByShift(shift, selectedMonth) {
       direction: item.direction,
       selectedMonth,
       effectiveMonth: monthKey,
-      value: item.shifts[shift][monthKey],
-      ...item.shifts[shift],
+      value,
+      ...shiftData,
     };
   });
 }
@@ -125,14 +153,14 @@ function getColor(status) {
 }
 
 function fmt(value) {
-  return `${value.toLocaleString("pt-BR", {
-    minimumFractionDigits: value < 1 ? 3 : 2,
-    maximumFractionDigits: value < 1 ? 3 : 2,
+  return `${Number(value || 0).toLocaleString("pt-BR", {
+    minimumFractionDigits: Number(value) < 1 ? 3 : 2,
+    maximumFractionDigits: Number(value) < 1 ? 3 : 2,
   })}%`;
 }
 
 function fmtNumber(value) {
-  return value.toLocaleString("pt-BR");
+  return Number(value || 0).toLocaleString("pt-BR");
 }
 
 function deltaValue(item) {
@@ -147,7 +175,7 @@ const dictionary = {
     onTrack: "On Track",
     attention: "Attention",
     dashboardTitle: "Executive Scorecard Dashboard",
-    dashboardSubtitle: "Monthly performance view · Target vs Actual",
+    dashboardSubtitle: "Monthly / Weekly performance view · Target vs Actual",
     productivityTitle: "Cycle Productivity",
     productivitySubtitle: "Productivity ranking by checker · Total counted locations",
     totalLocations: "Total Locations Counted",
@@ -168,7 +196,7 @@ const dictionary = {
     onTrack: "On Track",
     attention: "Attention",
     dashboardTitle: "Dashboard Executivo de Indicadores",
-    dashboardSubtitle: "Visão mensal · Meta vs Real",
+    dashboardSubtitle: "Visão mensal / semanal · Meta vs Real",
     productivityTitle: "Produtividade Ciclo",
     productivitySubtitle: "Ranking de produtividade por checker · Soma total de posições contadas",
     totalLocations: "Total de Posições Contadas",
@@ -270,7 +298,12 @@ function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelected
 
       <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
         {months.map((month) => (
-          <Button key={month.key} active={selectedMonth === month.key} onClick={() => setSelectedMonth(month.key)} color="#38bdf8">
+          <Button
+            key={month.key}
+            active={selectedMonth === month.key}
+            onClick={() => setSelectedMonth(month.key)}
+            color={weeklyKeys.includes(month.key) ? "#22c55e" : "#38bdf8"}
+          >
             {month.label}
           </Button>
         ))}
@@ -326,7 +359,7 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
             <h2 style={clusterTitle}>{cluster}</h2>
             <p style={clusterSubtitle}>
               {clusterKpis.length} indicators · {clusterAttention} attention · {selectedShift}
-              {cluster === "LOST" && selectedMonth !== "overall" ? " · Result based on Mar (M-2)" : ""}
+              {cluster === "LOST" && selectedMonth !== "overall" && !weeklyKeys.includes(selectedMonth) ? " · Result based on Mar (M-2)" : ""}
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px", marginTop: "20px" }}>
@@ -544,10 +577,10 @@ function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
         <ResponsiveContainer width="100%" height={420}>
           <LineChart
             data={[
-              { month: "Jan", value: selectedKpi.jan, target: selectedKpi.target },
-              { month: "Fev", value: selectedKpi.feb, target: selectedKpi.target },
-              { month: "Mar", value: selectedKpi.mar, target: selectedKpi.target },
-              { month: "Abr", value: selectedKpi.apr, target: selectedKpi.target },
+              { month: "Week 15", value: getWeeklyValue(selectedKpi, "w15"), target: selectedKpi.target },
+              { month: "Week 16", value: getWeeklyValue(selectedKpi, "w16"), target: selectedKpi.target },
+              { month: "Week 17", value: getWeeklyValue(selectedKpi, "w17"), target: selectedKpi.target },
+              { month: "Week 18", value: getWeeklyValue(selectedKpi, "w18"), target: selectedKpi.target },
             ]}
             margin={{ top: 30, right: 30, left: 10, bottom: 10 }}
           >
@@ -607,7 +640,7 @@ function KpiCard({ item, onClick }) {
       </span>
       <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>Jan → Selected: {fmt(item.jan)} → {fmt(item.value ?? item.apr)}</p>
       <p style={{ color: deltaGood ? "#22c55e" : "#ef4444", fontSize: "13px", marginTop: "6px" }}>Delta: {deltaGood ? "+" : ""}{fmt(delta)}</p>
-      {item.cluster === "LOST" && item.selectedMonth !== "overall" && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>Using M-2 result</p>}
+      {item.cluster === "LOST" && item.selectedMonth !== "overall" && !weeklyKeys.includes(item.selectedMonth) && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>Using M-2 result</p>}
     </div>
   );
 }
