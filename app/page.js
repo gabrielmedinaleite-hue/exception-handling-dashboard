@@ -1,31 +1,34 @@
 "use client";
 
 const kpis = [
-  { title: "Capital Loss Rate", area: "Loss", target: 0.095, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001, value: 0.001, direction: "lower" },
-  { title: "Operation Difference Rate", area: "Operation", target: 0.27, jan: 0.06, feb: 0.05, mar: 0.05, apr: 0.06, value: 0.06, direction: "lower" },
-  { title: "Exception Rate", area: "Receiving", target: 0.96, jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31, value: 0.31, direction: "lower" },
-  { title: "Empty Box", area: "Receiving", target: 0.20, jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14, value: 0.14, direction: "lower" },
-  { title: "Short Picking", area: "Picking", target: 0.08, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05, value: 0.05, direction: "lower" },
-  { title: "Abnormal Sorting", area: "Receiving", target: 0.20, jan: 0.14, feb: 0.10, mar: 0.15, apr: 0.13, value: 0.13, direction: "lower" },
-  { title: "Abnormal Shelving", area: "Packing", target: 2.00, jan: 1.27, feb: 1.23, mar: 1.61, apr: 1.72, value: 1.72, direction: "lower" },
-  { title: "Miss Scan", area: "Handover", target: 0.15, jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.04, value: 0.04, direction: "lower" },
-  { title: "Handover Failed", area: "Handover", target: 0.085, jan: 0.01, feb: 0.00, mar: 0.01, apr: 0.01, value: 0.01, direction: "lower" },
-  { title: "Missing Shipping", area: "Handover", target: 0.10, jan: 0.17, feb: 0.078, mar: 0.04, apr: 0.04, value: 0.04, direction: "lower" },
-  { title: "3D Tickets On Time Rate", area: "Tickets", target: 99.00, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91, value: 99.91, direction: "higher" },
-  { title: "Mis-ship Rate", area: "Shipping", target: 0.15, jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04, value: 0.04, direction: "lower" },
-  { title: "Miss Packing", area: "Packing", target: 0.05, jan: 0.041, feb: 0.025, mar: 0.034, apr: 0.04, value: 0.04, direction: "lower" },
-  { title: "Lost Rate", area: "Shipping", target: 0.05, jan: 0.086, feb: 0.052, mar: 0.032, apr: 0.011, value: 0.011, direction: "lower" },
-  { title: "Package Cancellation Rate", area: "Cancellation", target: 0.10, jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07, value: 0.07, direction: "lower" },
-  { title: "On Time Delivery Rate 15H", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 78.74, value: 78.74, direction: "higher" },
-  { title: "On Time Delivery Rate 1D", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 94.91, value: 94.91, direction: "higher" },
-  { title: "On Time Delivery Rate 2D", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 97.41, value: 97.41, direction: "higher" },
-  { title: "Overdue Consolidation Package", area: "Shipping", target: 0.53, jan: 0.21, feb: 0.24, mar: 0.36, apr: 0.27, value: 0.27, direction: "lower" },
-  { title: "3P On Time Return to Seller 2D", area: "Return", target: 95.00, jan: 41.6, feb: 46.2, mar: 49.3, apr: 40.0, value: 40.0, direction: "higher" },
-  { title: "Counting In Time Rate 24H", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 100, apr: 100, value: 100, direction: "higher" },
-  { title: "Counting Coverage Rate 1 Week", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 99.82, apr: 100, value: 100, direction: "higher" },
-  { title: "IRDR", area: "Inventory", target: 0.50, jan: 0.86, feb: 1.04, mar: 0.63, apr: 0.34, value: 0.34, direction: "lower" },
-  { title: "Wrongly Count", area: "Inventory", target: 1.00, jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06, value: 0.06, direction: "lower" },
+  { title: "Capital Loss Rate", cluster: "LOST", area: "Loss", target: 0.095, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001, value: 0.001, direction: "lower" },
+  { title: "Operation Difference Rate", cluster: "EXCEPTION", area: "Operation", target: 0.27, jan: 0.06, feb: 0.05, mar: 0.05, apr: 0.06, value: 0.06, direction: "lower" },
+  { title: "Exception Rate", cluster: "EXCEPTION", area: "Receiving", target: 0.96, jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31, value: 0.31, direction: "lower" },
+  { title: "Empty Box", cluster: "EXCEPTION", area: "Receiving", target: 0.20, jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14, value: 0.14, direction: "lower" },
+  { title: "Short Picking", cluster: "EXCEPTION", area: "Picking", target: 0.08, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05, value: 0.05, direction: "lower" },
+  { title: "Abnormal Sorting", cluster: "EXCEPTION", area: "Receiving", target: 0.20, jan: 0.14, feb: 0.10, mar: 0.15, apr: 0.13, value: 0.13, direction: "lower" },
+  { title: "Abnormal Shelving", cluster: "EXCEPTION", area: "Packing", target: 2.00, jan: 1.27, feb: 1.23, mar: 1.61, apr: 1.72, value: 1.72, direction: "lower" },
+  { title: "Miss Packing", cluster: "EXCEPTION", area: "Packing", target: 0.05, jan: 0.041, feb: 0.025, mar: 0.034, apr: 0.04, value: 0.04, direction: "lower" },
+
+  { title: "Miss Scan", cluster: "HANDOVER", area: "Handover", target: 0.15, jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.04, value: 0.04, direction: "lower" },
+  { title: "Handover Failed", cluster: "HANDOVER", area: "Handover", target: 0.085, jan: 0.01, feb: 0.00, mar: 0.01, apr: 0.01, value: 0.01, direction: "lower" },
+  { title: "Missing Shipping", cluster: "HANDOVER", area: "Handover", target: 0.10, jan: 0.17, feb: 0.078, mar: 0.04, apr: 0.04, value: 0.04, direction: "lower" },
+
+  { title: "Overdue Consolidation Package", cluster: "LOST", area: "Shipping", target: 0.53, jan: 0.21, feb: 0.24, mar: 0.36, apr: 0.27, value: 0.27, direction: "lower" },
+  { title: "Package Cancellation Rate", cluster: "LOST", area: "Cancellation", target: 0.10, jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07, value: 0.07, direction: "lower" },
+  { title: "3P On Time Return to Seller 2D", cluster: "LOST", area: "Return", target: 95.00, jan: 41.6, feb: 46.2, mar: 49.3, apr: 40.0, value: 40.0, direction: "higher" },
+  { title: "Lost Rate", cluster: "LOST", area: "Shipping", target: 0.05, jan: 0.086, feb: 0.052, mar: 0.032, apr: 0.011, value: 0.011, direction: "lower" },
+
+  { title: "IRDR", cluster: "INVENTORY", area: "Inventory", target: 0.50, jan: 0.86, feb: 1.04, mar: 0.63, apr: 0.34, value: 0.34, direction: "lower" },
+  { title: "Counting Coverage Rate 1 Week", cluster: "INVENTORY", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 99.82, apr: 100, value: 100, direction: "higher" },
+  { title: "Wrongly Count", cluster: "INVENTORY", area: "Inventory", target: 1.00, jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06, value: 0.06, direction: "lower" },
+  { title: "Counting In Time Rate 24H", cluster: "INVENTORY", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 100, apr: 100, value: 100, direction: "higher" },
+
+  { title: "3D Tickets On Time Rate", cluster: "TICKET", area: "Tickets", target: 99.00, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91, value: 99.91, direction: "higher" },
+  { title: "Mis-ship Rate", cluster: "TICKET", area: "Shipping", target: 0.15, jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04, value: 0.04, direction: "lower" },
 ];
+
+const clusters = ["EXCEPTION", "HANDOVER", "LOST", "INVENTORY", "TICKET"];
 
 const attentionByShift = [
   { kpi: "3P On Time Return to Seller 2D", target: 95, direction: "higher", morning: 49.1, afternoon: 24.5, night: 36.7, comment: "Principal risco operacional. Todos os turnos abaixo da meta, com maior gap no Afternoon." },
@@ -80,11 +83,29 @@ export default function Dashboard() {
         <TopCard title="Attention" value={attention} color="#f59e0b" />
       </section>
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px", marginBottom: "36px" }}>
-        {kpis.map((item) => (
-          <KpiCard key={item.title} item={item} />
-        ))}
-      </section>
+      {clusters.map((cluster) => {
+        const clusterKpis = kpis.filter((item) => item.cluster === cluster);
+        const clusterAttention = clusterKpis.filter((item) => getStatus(item) === "Attention").length;
+
+        return (
+          <section key={cluster} style={clusterSection}>
+            <div style={clusterHeader}>
+              <div>
+                <h2 style={clusterTitle}>{cluster}</h2>
+                <p style={clusterSubtitle}>
+                  {clusterKpis.length} indicators · {clusterAttention} attention
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px" }}>
+              {clusterKpis.map((item) => (
+                <KpiCard key={item.title} item={item} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
 
       <section style={{ ...panel, marginBottom: "30px" }}>
         <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
@@ -188,6 +209,33 @@ function ShiftPill({ value, target, direction }) {
     </span>
   );
 }
+
+const clusterSection = {
+  background: "#020617",
+  border: "1px solid #1e293b",
+  borderRadius: "26px",
+  padding: "24px",
+  marginBottom: "30px",
+};
+
+const clusterHeader = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "20px",
+};
+
+const clusterTitle = {
+  fontSize: "26px",
+  margin: 0,
+  color: "#e5e7eb",
+  letterSpacing: "1px",
+};
+
+const clusterSubtitle = {
+  color: "#94a3b8",
+  marginTop: "6px",
+};
 
 const panel = {
   background: "#0f172a",
