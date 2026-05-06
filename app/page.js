@@ -1,466 +1,944 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import {
-  ResponsiveContainer,
   LineChart,
   Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  LabelList,
   BarChart,
   Bar,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
 } from "recharts";
 
-const baseKpis = [
-  { title: "Capital Loss Rate", cluster: "LOST", area: "Loss", target: 0.095, direction: "lower", shifts: { Total: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Morning: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Afternoon: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Night: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 } } },
+import { useState } from "react";
 
-  { title: "Exception Rate", cluster: "EXCEPTION", area: "Receiving", target: 0.96, direction: "lower", shifts: { Total: { jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31 }, Morning: { jan: 0.61, feb: 0.44, mar: 0.67, apr: 0.35 }, Afternoon: { jan: 0.67, feb: 0.38, mar: 0.37, apr: 0.30 }, Night: { jan: 0.63, feb: 0.40, mar: 0.44, apr: 0.30 } } },
-  { title: "Empty Box", cluster: "EXCEPTION", area: "Receiving", target: 0.20, direction: "lower", shifts: { Total: { jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14 }, Morning: { jan: 0.41, feb: 0.28, mar: 0.39, apr: 0.14 }, Afternoon: { jan: 0.47, feb: 0.28, mar: 0.21, apr: 0.14 }, Night: { jan: 0.45, feb: 0.25, mar: 0.23, apr: 0.14 } } },
-  { title: "Short Picking", cluster: "EXCEPTION", area: "Picking", target: 0.08, direction: "lower", shifts: { Total: { jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Morning: { jan: 0.06, feb: 0.03, mar: 0.07, apr: 0.05 }, Afternoon: { jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Night: { jan: 0.04, feb: 0.04, mar: 0.04, apr: 0.04 } } },
-  { title: "Abnormal Sorting", cluster: "EXCEPTION", area: "Receiving", target: 0.20, direction: "lower", shifts: { Total: { jan: 0.14, feb: 0.10, mar: 0.15, apr: 0.13 }, Morning: { jan: 0.14, feb: 0.13, mar: 0.21, apr: 0.16 }, Afternoon: { jan: 0.15, feb: 0.07, mar: 0.11, apr: 0.10 }, Night: { jan: 0.14, feb: 0.11, mar: 0.16, apr: 0.12 } } },
-  { title: "Abnormal Shelving", cluster: "EXCEPTION", area: "Packing", target: 2.00, direction: "lower", shifts: { Total: { jan: 1.27, feb: 1.23, mar: 1.61, apr: 1.72 }, Morning: { jan: 1.48, feb: 1.24, mar: 1.95, apr: 2.07 }, Afternoon: { jan: 1.47, feb: 1.29, mar: 1.73, apr: 1.92 }, Night: { jan: 0.90, feb: 1.15, mar: 1.16, apr: 1.16 } } },
-  { title: "Miss Packing", cluster: "EXCEPTION", area: "Packing", target: 0.05, direction: "lower", shifts: { Total: { jan: 0.041, feb: 0.025, mar: 0.034, apr: 0.04 }, Morning: { jan: 0.05, feb: 0.03, mar: 0.04, apr: 0.03 }, Afternoon: { jan: 0.04, feb: 0.03, mar: 0.04, apr: 0.04 }, Night: { jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.03 } } },
+const pastelBlue = "rgba(96,165,250,0.75)";
+const pastelGreen = "rgba(74,222,128,0.75)";
+const pastelOrange = "rgba(251,191,36,0.75)";
+const pastelRed = "rgba(248,113,113,0.85)";
+const pastelPurple = "rgba(192,132,252,0.75)";
 
-  { title: "Miss Scan", cluster: "HANDOVER", area: "Handover", target: 0.15, direction: "lower", shifts: { Total: { jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.04 }, Morning: { jan: 0.09, feb: 0.01, mar: 0.03, apr: 0.03 }, Afternoon: { jan: 0.02, feb: 0.01, mar: 0.03, apr: 0.03 }, Night: { jan: 0.03, feb: 0.03, mar: 0.04, apr: 0.05 } } },
-  { title: "Handover Failed", cluster: "HANDOVER", area: "Handover", target: 0.085, direction: "lower", shifts: { Total: { jan: 0.01, feb: 0.00, mar: 0.01, apr: 0.01 }, Morning: { jan: 0.01, feb: 0.00, mar: 0.00, apr: 0.01 }, Afternoon: { jan: 0.01, feb: 0.01, mar: 0.01, apr: 0.02 }, Night: { jan: 0.01, feb: 0.00, mar: 0.00, apr: 0.01 } } },
-  { title: "Missing Shipping", cluster: "HANDOVER", area: "Handover", target: 0.10, direction: "lower", shifts: { Total: { jan: 0.17, feb: 0.078, mar: 0.04, apr: 0.04 }, Morning: { jan: 0.04, feb: 0.06, mar: 0.05, apr: 0.03 }, Afternoon: { jan: 0.32, feb: 0.09, mar: 0.02, apr: 0.02 }, Night: { jan: 0.16, feb: 0.08, mar: 0.05, apr: 0.06 } } },
+const monthOptions = ["Overall", "Jan", "Feb", "Mar", "Apr"];
+const shiftOptions = ["Total", "Morning", "Afternoon", "Night"];
 
-  { title: "On Time Delivery Rate 15H", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { jan: 0, feb: 0, mar: 0, apr: 78.74 }, Morning: { jan: 0, feb: 0, mar: 0, apr: 78.74 }, Afternoon: { jan: 0, feb: 0, mar: 0, apr: 78.74 }, Night: { jan: 0, feb: 0, mar: 0, apr: 78.74 } } },
-  { title: "On Time Delivery Rate 1D", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { jan: 0, feb: 0, mar: 0, apr: 94.91 }, Morning: { jan: 0, feb: 0, mar: 0, apr: 94.91 }, Afternoon: { jan: 0, feb: 0, mar: 0, apr: 94.91 }, Night: { jan: 0, feb: 0, mar: 0, apr: 94.91 } } },
-  { title: "On Time Delivery Rate 2D", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { jan: 0, feb: 0, mar: 0, apr: 97.41 }, Morning: { jan: 0, feb: 0, mar: 0, apr: 97.41 }, Afternoon: { jan: 0, feb: 0, mar: 0, apr: 97.41 }, Night: { jan: 0, feb: 0, mar: 0, apr: 97.41 } } },
-
-  { title: "Overdue Consolidation Package", cluster: "LOST", area: "Shipping", target: 0.53, direction: "lower", shifts: { Total: { jan: 0.21, feb: 0.24, mar: 0.36, apr: 0.27 }, Morning: { jan: 0.23, feb: 0.27, mar: 0.46, apr: 0.26 }, Afternoon: { jan: 0.22, feb: 0.20, mar: 0.24, apr: 0.22 }, Night: { jan: 0.22, feb: 0.24, mar: 0.40, apr: 0.32 } } },
-  { title: "Package Cancellation Rate", cluster: "LOST", area: "Cancellation", target: 0.10, direction: "lower", shifts: { Total: { jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07 }, Morning: { jan: 0.09, feb: 0.09, mar: 0.10, apr: 0.07 }, Afternoon: { jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07 }, Night: { jan: 0.09, feb: 0.10, mar: 0.09, apr: 0.07 } } },
-  { title: "3P On Time Return to Seller 2D", cluster: "LOST", area: "Return", target: 95.00, direction: "higher", shifts: { Total: { jan: 41.6, feb: 46.2, mar: 49.3, apr: 40.0 }, Morning: { jan: 42.7, feb: 48.8, mar: 51.9, apr: 49.1 }, Afternoon: { jan: 45.7, feb: 34.1, mar: 36.1, apr: 24.5 }, Night: { jan: 19.9, feb: 49.0, mar: 60.1, apr: 36.7 } } },
-  { title: "Lost Rate", cluster: "LOST", area: "Shipping", target: 0.05, direction: "lower", shifts: { Total: { jan: 0.086, feb: 0.052, mar: 0.032, apr: 0.011 }, Morning: { jan: 0.087, feb: 0.059, mar: 0.036, apr: 0.011 }, Afternoon: { jan: 0.110, feb: 0.047, mar: 0.030, apr: 0.013 }, Night: { jan: 0.077, feb: 0.050, mar: 0.030, apr: 0.009 } } },
-
-  { title: "IRDR", cluster: "INVENTORY", area: "Inventory", target: 0.50, direction: "lower", shifts: { Total: { jan: 0.86, feb: 1.04, mar: 0.63, apr: 0.34 }, Morning: { jan: 0.16, feb: 0.19, mar: 0.14, apr: 0.08 }, Afternoon: { jan: 0.20, feb: 0.24, mar: 0.16, apr: 0.10 }, Night: { jan: 0.25, feb: 0.29, mar: 0.16, apr: 0.09 } } },
-  { title: "Counting Coverage Rate 1 Week", cluster: "INVENTORY", area: "Inventory", target: 100.00, direction: "higher", shifts: { Total: { jan: 100, feb: 100, mar: 99.82, apr: 100 }, Morning: { jan: 44.25, feb: 39.80, mar: 42.18, apr: 47.01 }, Afternoon: { jan: 28.21, feb: 27.21, mar: 33.08, apr: 35.02 }, Night: { jan: 27.54, feb: 32.99, mar: 24.74, apr: 17.71 } } },
-  { title: "Wrongly Count", cluster: "INVENTORY", area: "Inventory", target: 1.00, direction: "lower", shifts: { Total: { jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06 }, Morning: { jan: 0.11, feb: 0.19, mar: 0.07, apr: 0.04 }, Afternoon: { jan: 0.18, feb: 0.29, mar: 0.23, apr: 0.10 }, Night: { jan: 0.02, feb: 0.01, mar: 0.02, apr: 0.02 } } },
-  { title: "Counting In Time Rate 24H", cluster: "INVENTORY", area: "Inventory", target: 100.00, direction: "higher", shifts: { Total: { jan: 100, feb: 100, mar: 100, apr: 100 }, Morning: { jan: 100, feb: 100, mar: 100, apr: 100 }, Afternoon: { jan: 100, feb: 100, mar: 100, apr: 100 }, Night: { jan: 100, feb: 100, mar: 100, apr: 100 } } },
-
-  { title: "3D Tickets On Time Rate", cluster: "TICKET", area: "Tickets", target: 99.00, direction: "higher", shifts: { Total: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Morning: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Afternoon: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Night: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 } } },
-  { title: "Mis-ship Rate", cluster: "TICKET", area: "Shipping", target: 0.15, direction: "lower", shifts: { Total: { jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04 }, Morning: { jan: 0.12, feb: 0.04, mar: 0.08, apr: 0.05 }, Afternoon: { jan: 0.14, feb: 0.04, mar: 0.07, apr: 0.04 }, Night: { jan: 0.09, feb: 0.05, mar: 0.06, apr: 0.04 } } },
+const weeklyData = [
+  { week: "W14", value: 0.34 },
+  { week: "W15", value: 0.31 },
+  { week: "W16", value: 0.32 },
+  { week: "W17", value: 0.28 },
+  { week: "W18", value: 0.31 },
 ];
 
-const productivityRows = [
-  { checker: "SuzyCarvalho", shift: "Morning", total: 6160 },
-  { checker: "GabrielaSilva", shift: "Morning", total: 5244 },
-  { checker: "JaineSantos", shift: "Morning", total: 3784 },
-  { checker: "SanySantos", shift: "Morning", total: 3736 },
-  { checker: "JulianaDelis", shift: "Morning", total: 3430 },
-  { checker: "ElienePereira", shift: "Morning", total: 3360 },
-  { checker: "MarilenyBarros", shift: "Afternoon", total: 5308 },
-  { checker: "TaliaAraujo", shift: "Afternoon", total: 4328 },
-  { checker: "AnaQueiroz", shift: "Afternoon", total: 3080 },
-  { checker: "FrancieleSouza", shift: "Afternoon", total: 2854 },
-  { checker: "KetullynPedroza", shift: "Afternoon", total: 2870 },
-  { checker: "CarlosHamamoto", shift: "Afternoon", total: 2088 },
-  { checker: "NathaliaAlves", shift: "Night", total: 3232 },
-  { checker: "GraziellyFerreira", shift: "Night", total: 3033 },
-  { checker: "VitoriaSantos1", shift: "Night", total: 2837 },
-  { checker: "EvilenSantos", shift: "Night", total: 2790 },
-  { checker: "ThailaneAraujo", shift: "Night", total: 2064 },
-  { checker: "MalenaPinhao", shift: "Night", total: 2000 },
+const inventoryProductivity = [
+  { checker: "Tatiana", productivity: 98 },
+  { checker: "Laisla", productivity: 96 },
+  { checker: "Klebio", productivity: 95 },
+  { checker: "William", productivity: 93 },
+  { checker: "Jason", productivity: 91 },
+  { checker: "Luis", productivity: 89 },
 ];
 
-const clusters = ["EXCEPTION", "HANDOVER", "SLA", "LOST", "INVENTORY", "TICKET"];
-const shifts = ["Total", "Morning", "Afternoon", "Night"];
-const months = [
-  { key: "jan", label: "Jan" },
-  { key: "feb", label: "Fev" },
-  { key: "mar", label: "Mar" },
-  { key: "apr", label: "Abr" },
-];
+const indicators = {
+  EXCEPTION: [
+    {
+      title: "Exception Rate",
+      target: 0.96,
+      overall: 0.45,
+      jan: 0.64,
+      feb: 0.41,
+      mar: 0.47,
+      apr: 0.31,
+      trend: [0.64, 0.41, 0.47, 0.31],
+    },
+    {
+      title: "Empty Box",
+      target: 0.2,
+      overall: 0.27,
+      jan: 0.45,
+      feb: 0.27,
+      mar: 0.26,
+      apr: 0.14,
+      trend: [0.45, 0.27, 0.26, 0.14],
+    },
+    {
+      title: "Short Picking",
+      target: 0.08,
+      overall: 0.05,
+      jan: 0.05,
+      feb: 0.03,
+      mar: 0.06,
+      apr: 0.05,
+      trend: [0.05, 0.03, 0.06, 0.05],
+    },
+    {
+      title: "Abnormal Sorting",
+      target: 0.2,
+      overall: 0.13,
+      jan: 0.14,
+      feb: 0.1,
+      mar: 0.15,
+      apr: 0.13,
+      trend: [0.14, 0.1, 0.15, 0.13],
+    },
+    {
+      title: "Abnormal Shelving",
+      target: 2,
+      overall: 1.46,
+      jan: 1.27,
+      feb: 1.23,
+      mar: 1.61,
+      apr: 1.72,
+      trend: [1.27, 1.23, 1.61, 1.72],
+    },
+    {
+      title: "Miss Packing",
+      target: 0.05,
+      overall: 0.03,
+      jan: 0.041,
+      feb: 0.025,
+      mar: 0.034,
+      apr: 0.04,
+      trend: [0.041, 0.025, 0.034, 0.04],
+    },
+  ],
 
-function getEffectiveMonth(kpi, selectedMonth) {
-  return kpi.cluster === "LOST" ? "mar" : selectedMonth;
-}
+  HANDOVER: [
+    {
+      title: "Miss Scan",
+      target: 0.15,
+      overall: 0.03,
+      jan: 0.04,
+      feb: 0.02,
+      mar: 0.03,
+      apr: 0.03,
+      trend: [0.04, 0.02, 0.03, 0.03],
+    },
+    {
+      title: "Handover Failed",
+      target: 0.085,
+      overall: 0.01,
+      jan: 0.01,
+      feb: 0,
+      mar: 0.01,
+      apr: 0.01,
+      trend: [0.01, 0, 0.01, 0.01],
+    },
+    {
+      title: "Missing Shipping",
+      target: 0.15,
+      overall: 0.09,
+      jan: 0.17,
+      feb: 0.078,
+      mar: 0.04,
+      apr: 0.05,
+      trend: [0.17, 0.078, 0.04, 0.05],
+    },
+  ],
 
-function buildKpisByShift(shift, selectedMonth) {
-  return baseKpis.map((item) => {
-    const monthKey = getEffectiveMonth(item, selectedMonth);
-    return {
-      title: item.title,
-      cluster: item.cluster,
-      area: item.area,
-      target: item.target,
-      direction: item.direction,
-      selectedMonth,
-      effectiveMonth: monthKey,
-      value: item.shifts[shift][monthKey],
-      ...item.shifts[shift],
-    };
-  });
-}
+  LOST: [
+    {
+      title: "Overdue Consolidation",
+      target: 0.53,
+      overall: 0.28,
+      jan: 0.21,
+      feb: 0.24,
+      mar: 0.36,
+      apr: 0.27,
+      trend: [0.21, 0.24, 0.36, 0.27],
+    },
+    {
+      title: "Cancellation Rate",
+      target: 0.1,
+      overall: 0.09,
+      jan: 0.1,
+      feb: 0.09,
+      mar: 0.09,
+      apr: 0.07,
+      trend: [0.1, 0.09, 0.09, 0.07],
+    },
+    {
+      title: "Return to Seller",
+      target: 95,
+      overall: 44,
+      jan: 41.6,
+      feb: 46.2,
+      mar: 49.3,
+      apr: 40,
+      trend: [41.6, 46.2, 49.3, 40],
+    },
+    {
+      title: "Lost",
+      target: 0.05,
+      overall: 0.04,
+      jan: 0.086,
+      feb: 0.052,
+      mar: 0.032,
+      apr: 0.01,
+      trend: [0.086, 0.052, 0.032, 0.01],
+    },
+  ],
 
-function buildSingleKpi(title, shift) {
-  const item = baseKpis.find((kpi) => kpi.title === title);
-  if (!item) return null;
-  return {
-    title: item.title,
-    cluster: item.cluster,
-    area: item.area,
-    target: item.target,
-    direction: item.direction,
-    ...item.shifts[shift],
-  };
-}
+  INVENTORY: [
+    {
+      title: "IRDR",
+      target: 0.5,
+      overall: 0.69,
+      jan: 0.86,
+      feb: 1.04,
+      mar: 0.63,
+      apr: 0.34,
+      trend: [0.86, 1.04, 0.63, 0.34],
+    },
+    {
+      title: "Counting Coverage",
+      target: 100,
+      overall: 100,
+      jan: 100,
+      feb: 100,
+      mar: 99.82,
+      apr: 100,
+      trend: [100, 100, 99.82, 100],
+    },
+    {
+      title: "Wrongly Count",
+      target: 1,
+      overall: 0.11,
+      jan: 0.1,
+      feb: 0.16,
+      mar: 0.11,
+      apr: 0.06,
+      trend: [0.1, 0.16, 0.11, 0.06],
+    },
+  ],
 
-function isOnTrack(kpi) {
-  return kpi.direction === "lower" ? kpi.value <= kpi.target : kpi.value >= kpi.target;
-}
+  TICKET: [
+    {
+      title: "3D Ticket SLA",
+      target: 99,
+      overall: 99.83,
+      jan: 99.71,
+      feb: 99.94,
+      mar: 99.84,
+      apr: 99.91,
+      trend: [99.71, 99.94, 99.84, 99.91],
+    },
+    {
+      title: "Mis-ship Rate",
+      target: 0.15,
+      overall: 0.07,
+      jan: 0.11,
+      feb: 0.05,
+      mar: 0.07,
+      apr: 0.04,
+      trend: [0.11, 0.05, 0.07, 0.04],
+    },
+  ],
 
-function getStatus(kpi) {
-  return isOnTrack(kpi) ? "On Track" : "Attention";
-}
+  SLA: [
+    {
+      title: "OTD 15H",
+      target: 95,
+      overall: 78.69,
+      jan: 78.69,
+      feb: 64.42,
+      mar: 82.06,
+      apr: 91.16,
+      trend: [78.69, 64.42, 82.06, 91.16],
+    },
+    {
+      title: "OTD 1D",
+      target: 95,
+      overall: 94.89,
+      jan: 94.89,
+      feb: 91.71,
+      mar: 90.24,
+      apr: 94.78,
+      trend: [94.89, 91.71, 90.24, 94.78],
+    },
+    {
+      title: "OTD 2D",
+      target: 95,
+      overall: 97.4,
+      jan: 97.4,
+      feb: 96.9,
+      mar: 94.89,
+      apr: 95.13,
+      trend: [97.4, 96.9, 94.89, 95.13],
+    },
+  ],
+};
 
-function getColor(status) {
-  return status === "On Track" ? "#22c55e" : "#f59e0b";
-}
-
-function fmt(value) {
-  return `${value.toLocaleString("pt-BR", {
-    minimumFractionDigits: value < 1 ? 3 : 2,
-    maximumFractionDigits: value < 1 ? 3 : 2,
-  })}%`;
-}
-
-function fmtNumber(value) {
-  return value.toLocaleString("pt-BR");
-}
-
-function deltaValue(item) {
-  return item.direction === "lower" ? item.jan - item.value : item.value - item.jan;
-}
-
-export default function Dashboard() {
-  const [activePage, setActivePage] = useState("scorecard");
+export default function Page() {
   const [selectedShift, setSelectedShift] = useState("Total");
-  const [selectedMonth, setSelectedMonth] = useState("apr");
-  const [selectedKpiTitle, setSelectedKpiTitle] = useState(null);
-  const [chartShift, setChartShift] = useState("Total");
+  const [selectedMonth, setSelectedMonth] = useState("Overall");
+  const [selectedView, setSelectedView] = useState("scorecard");
+  const [language, setLanguage] = useState("EN");
+  const [selectedIndicator, setSelectedIndicator] = useState(null);
 
-  const kpis = buildKpisByShift(selectedShift, selectedMonth);
-  const selectedKpi = selectedKpiTitle ? buildSingleKpi(selectedKpiTitle, chartShift) : null;
+  const getValue = (item) => {
+    if (selectedMonth === "Jan") return item.jan;
+    if (selectedMonth === "Feb") return item.feb;
+    if (selectedMonth === "Mar") return item.mar;
+    if (selectedMonth === "Apr") return item.apr;
+    return item.overall;
+      const allItems = Object.values(indicators).flat();
+  const totalKpis = allItems.length;
+
+  const onTrack = allItems.filter((item) => getValue(item) <= item.target || item.title.includes("OTD") || item.title.includes("SLA") || item.title.includes("Coverage")).length;
+  const attention = totalKpis - onTrack;
+
+  const t = {
+    title: language === "EN" ? "Executive Scorecard Dashboard" : "Dashboard Executivo de Indicadores",
+    subtitle: language === "EN" ? "Monthly and weekly performance view" : "Visão mensal e semanal de performance",
+    productivity: language === "EN" ? "Cycle Productivity" : "Produtividade Ciclo",
+    scorecard: language === "EN" ? "Scorecard" : "Scorecard",
+    totalKpis: language === "EN" ? "Total KPIs" : "Total de KPIs",
+    onTrack: language === "EN" ? "On Track" : "No alvo",
+    attention: language === "EN" ? "Attention" : "Atenção",
+    weekly: language === "EN" ? "Weekly Process Analysis" : "Análise Semanal do Processo",
+    insights: language === "EN" ? "Executive Insights" : "Insights Executivos",
+  };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#020617", color: "white", fontFamily: "Arial" }}>
-      <aside style={sidebar}>
-        <h2 style={{ fontSize: "18px", marginBottom: "26px", color: "#fb923c" }}>EH & Inventory</h2>
-        <SideButton active={activePage === "scorecard"} onClick={() => setActivePage("scorecard")}>Scorecard</SideButton>
-        <SideButton active={activePage === "productivity"} onClick={() => setActivePage("productivity")}>Produtividade Ciclo</SideButton>
+    <main
+      style={{
+        display: "flex",
+        background: "#020617",
+        minHeight: "100vh",
+        color: "white",
+        fontFamily: "Arial",
+      }}
+    >
+      <aside
+        style={{
+          width: "230px",
+          background: "#020617",
+          borderRight: "1px solid #1e293b",
+          padding: "28px 20px",
+          position: "sticky",
+          top: 0,
+          height: "100vh",
+        }}
+      >
+        <h2 style={{ color: "#fb923c", fontSize: "18px", marginBottom: "28px" }}>
+          EH Control Tower
+        </h2>
+
+        <button
+          onClick={() => setSelectedView("scorecard")}
+          style={sideButton(selectedView === "scorecard")}
+        >
+          📊 {t.scorecard}
+        </button>
+
+        <button
+          onClick={() => setSelectedView("productivity")}
+          style={sideButton(selectedView === "productivity")}
+        >
+          📦 {t.productivity}
+        </button>
+
+        <div style={{ marginTop: "30px" }}>
+          <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "10px" }}>
+            Language
+          </p>
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            {["EN", "PT"].map((lang) => (
+              <button
+                key={lang}
+                onClick={() => setLanguage(lang)}
+                style={{
+                  background: language === lang ? "#fb923c" : "#0f172a",
+                  color: language === lang ? "#020617" : "#cbd5e1",
+                  border: language === lang ? "1px solid #fb923c" : "1px solid #1e293b",
+                  borderRadius: "999px",
+                  padding: "8px 12px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+        </div>
       </aside>
 
-      <main style={{ flex: 1, padding: "34px" }}>
-        {activePage === "scorecard" ? (
-          <ScorecardPage
-            kpis={kpis}
-            selectedShift={selectedShift}
-            setSelectedShift={setSelectedShift}
-            selectedMonth={selectedMonth}
-            setSelectedMonth={setSelectedMonth}
-            setSelectedKpiTitle={setSelectedKpiTitle}
-            setChartShift={setChartShift}
+      <section style={{ flex: 1, padding: "34px" }}>
+        <header style={{ marginBottom: "28px" }}>
+          <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>
+            SHEIN WHA · EXCEPTION HANDLING & INVENTORY
+          </p>
+
+          <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>
+            {selectedView === "scorecard" ? t.title : t.productivity}
+          </h1>
+
+          <p style={{ color: "#94a3b8", fontSize: "18px" }}>
+            {t.subtitle} · {selectedShift} · {selectedMonth}
+          </p>
+        </header>
+
+        <div
+          style={{
+            display: "flex",
+            gap: "22px",
+            alignItems: "center",
+            flexWrap: "wrap",
+            marginBottom: "28px",
+          }}
+        >
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            {shiftOptions.map((shift) => (
+              <button
+                key={shift}
+                onClick={() => setSelectedShift(shift)}
+                style={filterButton(selectedShift === shift, "#fb923c")}
+              >
+                {shift}
+              </button>
+            ))}
+          </div>
+
+          <div
+            style={{
+              width: "1px",
+              height: "28px",
+              background: "#334155",
+            }}
           />
-        ) : (
-          <ProductivityPage />
-        )}
 
-        {selectedKpi && (
-          <KpiModal
-            selectedKpi={selectedKpi}
-            chartShift={chartShift}
-            setChartShift={setChartShift}
-            close={() => setSelectedKpiTitle(null)}
-          />
-        )}
-      </main>
-    </div>
-  );
-}
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+            {monthOptions.map((month) => (
+              <button
+                key={month}
+                onClick={() => setSelectedMonth(month)}
+                style={filterButton(selectedMonth === month, "#38bdf8")}
+              >
+                {month}
+              </button>
+            ))}
+          </div>
+        </div>
 
-function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, setSelectedMonth, setSelectedKpiTitle, setChartShift }) {
-  const onTrack = kpis.filter((k) => getStatus(k) === "On Track").length;
-  const attention = kpis.length - onTrack;
+        {selectedView === "scorecard" ? (
+          <>
+            <section
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 180px)",
+                gap: "14px",
+                marginBottom: "30px",
+              }}
+            >
+              <TopCard title={t.totalKpis} value={totalKpis} color="#38bdf8" />
+              <TopCard title={t.onTrack} value={onTrack} color="#22c55e" />
+              <TopCard title={t.attention} value={attention} color="#f59e0b" />
+            </section>
 
-  const attentionByShift = kpis
-    .filter((kpi) => getStatus(kpi) === "Attention")
-    .map((kpi) => ({
-      kpi: kpi.title,
-      target: kpi.target,
-      current: kpi.value,
-      jan: kpi.jan,
-      direction: kpi.direction,
-      effectiveMonth: kpi.effectiveMonth,
-    }));
+            {Object.entries(indicators).map(([cluster, items]) => (
+              <section key={cluster} style={clusterSection}>
+                <h2 style={clusterTitle}>{cluster}</h2>
+                <p style={clusterSubtitle}>
+                  {items.length} indicators · {selectedShift} · {selectedMonth}
+                </p>
 
-  return (
-    <>
-      <header style={{ marginBottom: "28px" }}>
-        <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · EXCEPTION HANDLING & INVENTORY</p>
-        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>Executive Scorecard Dashboard</h1>
-        <p style={{ color: "#94a3b8", fontSize: "18px" }}>
-          Monthly performance view · Target vs Actual · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
-        </p>
-      </header>
-
-      <section style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
-        {shifts.map((shift) => <Button key={shift} active={selectedShift === shift} onClick={() => setSelectedShift(shift)}>{shift}</Button>)}
-      </section>
-
-      <section style={{ display: "flex", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
-        {months.map((month) => <Button key={month.key} active={selectedMonth === month.key} onClick={() => setSelectedMonth(month.key)} color="#38bdf8">{month.label}</Button>)}
-      </section>
-
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 180px)", gap: "14px", marginBottom: "30px" }}>
-        <TopCard title="Total KPIs" value={kpis.length} color="#38bdf8" />
-        <TopCard title="On Track" value={onTrack} color="#22c55e" />
-        <TopCard title="Attention" value={attention} color="#f59e0b" />
-      </section>
-
-      {clusters.map((cluster) => {
-        const clusterKpis = kpis.filter((item) => item.cluster === cluster);
-        const clusterAttention = clusterKpis.filter((item) => getStatus(item) === "Attention").length;
-
-        return (
-          <section key={cluster} style={clusterSection}>
-            <h2 style={clusterTitle}>{cluster}</h2>
-            <p style={clusterSubtitle}>
-              {clusterKpis.length} indicators · {clusterAttention} attention · {selectedShift}
-              {cluster === "LOST" ? " · Result based on Mar (M-2)" : ""}
-            </p>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px", marginTop: "20px" }}>
-              {clusterKpis.map((item) => (
-                <KpiCard
-                  key={item.title}
-                  item={item}
-                  onClick={() => {
-                    setSelectedKpiTitle(item.title);
-                    setChartShift(selectedShift);
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))",
+                    gap: "18px",
+                    marginTop: "20px",
                   }}
+                >
+                  {items.map((item) => (
+                    <KpiCard
+                      key={item.title}
+                      item={item}
+                      value={getValue(item)}
+                      onClick={() => setSelectedIndicator(item)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            <section style={panel}>
+              <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+                {t.weekly}
+              </h2>
+
+              <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
+                {language === "EN"
+                  ? "Weekly process behavior to identify acceleration, deterioration and operational instability."
+                  : "Comportamento semanal do processo para identificar aceleração, deterioração e instabilidade operacional."}
+              </p>
+
+              <ResponsiveContainer width="100%" height={320}>
+                <LineChart data={weeklyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                  <XAxis dataKey="week" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#38bdf8"
+                    strokeWidth={4}
+                    dot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </section>
+
+            <ActionPlan language={language} />
+
+            <section style={{ ...panel, marginTop: "30px" }}>
+              <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+                {t.insights}
+              </h2>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))",
+                  gap: "18px",
+                  marginTop: "22px",
+                }}
+              >
+                <InsightCard
+                  title={language === "EN" ? "KPI Interference" : "Interferência entre KPIs"}
+                  text={
+                    language === "EN"
+                      ? "SLA deterioration usually increases overdue consolidation, which later increases cancellation and lost risk."
+                      : "A deterioração do SLA tende a aumentar overdue consolidation, que depois aumenta risco de cancelamento e lost."
+                  }
                 />
-              ))}
-            </div>
-          </section>
-        );
-      })}
+                <InsightCard
+                  title={language === "EN" ? "Warehouse Specialist View" : "Visão Especialista de Warehouse"}
+                  text={
+                    language === "EN"
+                      ? "Exception indicators are upstream drivers. When receiving, picking or packing quality deteriorates, shipping and customer-facing KPIs are impacted downstream."
+                      : "Indicadores de exception são drivers upstream. Quando recebimento, picking ou packing deterioram, shipping e KPIs voltados ao cliente são impactados downstream."
+                  }
+                />
+                <InsightCard
+                  title="Prediction Data Base"
+                  text={
+                    language === "EN"
+                      ? "The prediction should combine weekly trend, monthly target gap and cross-KPI interference to anticipate the next operational bottleneck."
+                      : "A previsão deve combinar tendência semanal, gap mensal contra a meta e interferência entre KPIs para antecipar o próximo gargalo operacional."
+                  }
+                />
+              </div>
+            </section>
+          </>
+        ) : (
+          <ProductivityView
+            selectedShift={selectedShift}
+            selectedMonth={selectedMonth}
+            language={language}
+          />
+        )}
 
-      <section style={{ ...panel, marginBottom: "30px" }}>
-        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Attention Indicators · {selectedShift} Deep Dive</h2>
-        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-          Indicadores fora da meta na visão selecionada. Para o cluster LOST, o resultado considera sempre M-2.
-        </p>
-
-        <Table headers={["KPI", "Target", "Jan", "Period Used", "Current", "Main Insight"]}>
-          {attentionByShift.map((row) => (
-            <tr key={row.kpi} style={{ borderTop: "1px solid #1e293b" }}>
-              <td style={td}>{row.kpi}</td>
-              <td style={td}>{fmt(row.target)}</td>
-              <td style={td}>{fmt(row.jan)}</td>
-              <td style={td}>{row.effectiveMonth.toUpperCase()}</td>
-              <td style={td}><ShiftPill value={row.current} target={row.target} direction={row.direction} /></td>
-              <td style={{ ...td, color: "#cbd5e1" }}>
-                {row.direction === "higher" ? "Abaixo da meta. Necessário plano de recuperação do SLA." : "Acima da meta. Necessário RCA por processo e owner."}
-              </td>
-            </tr>
-          ))}
-        </Table>
+        {selectedIndicator && (
+          <Modal
+            item={selectedIndicator}
+            onClose={() => setSelectedIndicator(null)}
+            language={language}
+          />
+        )}
       </section>
-
-      <ActionPlanSection />
-      <PredictiveInsights />
-    </>
+    </main>
   );
 }
 
-function ProductivityPage() {
-  const inventoryKpis = buildKpisByShift("Total", "apr").filter((kpi) => kpi.cluster === "INVENTORY");
+function ProductivityView({ selectedShift, selectedMonth, language }) {
+  const filteredProductivity =
+    selectedShift === "Total"
+      ? inventoryProductivity
+      : inventoryProductivity.filter((_, index) => {
+          if (selectedShift === "Morning") return index < 2;
+          if (selectedShift === "Afternoon") return index >= 2 && index < 4;
+          return index >= 4;
+        });
 
-  const totalLocations = productivityRows.reduce((sum, row) => sum + row.total, 0);
-  const totalCheckers = productivityRows.length;
-  const topChecker = [...productivityRows].sort((a, b) => b.total - a.total)[0];
+  const totalProductivity = filteredProductivity.reduce(
+    (sum, item) => sum + item.productivity,
+    0
+  );
 
-  const shiftTotals = ["Morning", "Afternoon", "Night"].map((shift) => ({
-    shift,
-    total: productivityRows.filter((row) => row.shift === shift).reduce((sum, row) => sum + row.total, 0),
-  }));
-
-  const bestShift = [...shiftTotals].sort((a, b) => b.total - a.total)[0];
+  const avgProductivity =
+    filteredProductivity.length > 0
+      ? totalProductivity / filteredProductivity.length
+      : 0;
 
   return (
     <>
-      <header style={{ marginBottom: "28px" }}>
-        <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · INVENTORY PRODUCTIVITY</p>
-        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>Produtividade Ciclo</h1>
-        <p style={{ color: "#94a3b8", fontSize: "18px" }}>
-          Ranking de produtividade por checker · Soma total de posições contadas
-        </p>
-      </header>
-
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "14px", marginBottom: "30px" }}>
-        <TopCard title="Total Locations Counted" value={fmtNumber(totalLocations)} color="#38bdf8" />
-        <TopCard title="Total Checkers" value={totalCheckers} color="#22c55e" />
-        <TopCard title="Best Shift" value={bestShift.shift} color="#f59e0b" />
-        <TopCard title="Top Checker" value={topChecker.checker} color="#fb923c" />
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
+          gap: "14px",
+          marginBottom: "30px",
+        }}
+      >
+        <TopCard
+          title={language === "EN" ? "Total Productivity" : "Produtividade Total"}
+          value={totalProductivity.toFixed(0)}
+          color="#38bdf8"
+        />
+        <TopCard
+          title={language === "EN" ? "Average Productivity" : "Produtividade Média"}
+          value={avgProductivity.toFixed(1)}
+          color="#22c55e"
+        />
+        <TopCard
+          title={language === "EN" ? "Active Checkers" : "Checkers Ativos"}
+          value={filteredProductivity.length}
+          color="#f59e0b"
+        />
       </section>
 
       <section style={clusterSection}>
-        <h2 style={clusterTitle}>INVENTORY KPI INTRODUCTION</h2>
-        <p style={clusterSubtitle}>Indicadores de inventário que explicam a produtividade do ciclo.</p>
+        <h2 style={clusterTitle}>INVENTORY</h2>
+        <p style={clusterSubtitle}>
+          {language === "EN"
+            ? "Inventory indicators supporting cycle productivity."
+            : "Indicadores de inventário que suportam a produtividade do ciclo."}
+        </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px", marginTop: "20px" }}>
-          {inventoryKpis.map((item) => <KpiCard key={item.title} item={item} />)}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))",
+            gap: "18px",
+            marginTop: "20px",
+          }}
+        >
+          {indicators.INVENTORY.map((item) => (
+            <KpiCard
+              key={item.title}
+              item={item}
+              value={selectedMonth === "Overall" ? item.overall : item[selectedMonth.toLowerCase()]}
+            />
+          ))}
         </div>
       </section>
 
-      <section style={{ ...panel, marginBottom: "30px" }}>
-        <h2 style={{ fontSize: "28px", marginBottom: "18px" }}>Produtividade por Turno</h2>
+      <section style={panel}>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+          {language === "EN" ? "Top Checkers Productivity" : "Top Produtividades por Checker"}
+        </h2>
 
-        <ResponsiveContainer width="100%" height={320}>
-          <BarChart data={shiftTotals}>
+        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
+          {language === "EN"
+            ? "Ranking based on total counted inventory cycle locations."
+            : "Ranking baseado na soma total de posições contadas no ciclo de inventário."}
+        </p>
+
+        <ResponsiveContainer width="100%" height={360}>
+          <BarChart
+            data={filteredProductivity}
+            layout="vertical"
+            margin={{ top: 10, right: 40, left: 40, bottom: 10 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            <XAxis dataKey="shift" stroke="#94a3b8" />
-            <YAxis stroke="#94a3b8" />
+            <XAxis type="number" stroke="#94a3b8" />
+            <YAxis dataKey="checker" type="category" stroke="#94a3b8" width={110} />
             <Tooltip />
-            <Bar dataKey="total" fill="rgba(56,189,248,0.55)" radius={[8, 8, 0, 0]}>
-              <LabelList dataKey="total" position="top" fill="#e5e7eb" formatter={fmtNumber} />
-            </Bar>
+            <Bar dataKey="productivity" fill={pastelBlue} radius={[0, 8, 8, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </section>
 
-      {["Morning", "Afternoon", "Night"].map((shift) => {
-        const rows = productivityRows
-          .filter((row) => row.shift === shift)
-          .sort((a, b) => b.total - a.total);
+      <section style={{ ...panel, marginTop: "30px" }}>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+          {language === "EN" ? "Weekly Productivity Process" : "Processo Semanal de Produtividade"}
+        </h2>
 
-        return (
-          <section key={shift} style={{ ...panel, marginBottom: "30px" }}>
-            <h2 style={{ fontSize: "28px", marginBottom: "18px" }}>Top Checkers · {shift}</h2>
-
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={rows} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis type="number" stroke="#94a3b8" />
-                <YAxis dataKey="checker" type="category" stroke="#94a3b8" width={150} />
-                <Tooltip />
-                <Bar dataKey="total" fill="rgba(251,146,60,0.55)" radius={[0, 8, 8, 0]}>
-                  <LabelList dataKey="total" position="right" fill="#e5e7eb" formatter={fmtNumber} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </section>
-        );
-      })}
-
-      <section style={{ ...panel, marginBottom: "30px" }}>
-        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Inventory Cycle Insights</h2>
-        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-          Análise executiva da produtividade de inventário.
-        </p>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "18px" }}>
-          <InsightCard title="Main Productivity Driver" text={`${bestShift.shift} concentra o maior volume de posições contadas no recorte atual, indicando maior capacidade operacional nesse turno.`} />
-          <InsightCard title="Top Performer Impact" text={`${topChecker.checker} é o maior destaque individual, com ${fmtNumber(topChecker.total)} posições contadas no ciclo.`} />
-          <InsightCard title="KPI Interference" text="Produtividade de ciclo influencia diretamente Counting Coverage, IRDR e Wrongly Count. Alta produtividade sem qualidade pode aumentar divergências de estoque." />
-          <InsightCard title="Warehouse Specialist Insight" text="O ideal é balancear volume contado com acuracidade. Checkers com alta produção devem ser acompanhados também por taxa de erro." />
-        </div>
+        <ResponsiveContainer width="100%" height={300}>
+          <AreaChart data={weeklyData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <XAxis dataKey="week" stroke="#94a3b8" />
+            <YAxis stroke="#94a3b8" />
+            <Tooltip />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="#38bdf8"
+              fill="rgba(56,189,248,0.25)"
+              strokeWidth={3}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </section>
     </>
   );
 }
+function KpiCard({ item, value, onClick }) {
+  const lowerIsBetter = !item.title.includes("OTD") && !item.title.includes("SLA") && !item.title.includes("Coverage");
+  const onTrack = lowerIsBetter ? value <= item.target : value >= item.target;
+  const color = onTrack ? "#22c55e" : "#f59e0b";
 
-function ActionPlanSection() {
-  const actions = [
-    { what: "Frente de caixa", why: "Reter pacotes cancelados no packing", where: "Packing", when: "2025-2026", who: "Janus Liu", how: "Inserir bloqueio sistêmico no WMS", status: "Ongoing" },
-    { what: "Correção do sistema de etiqueta de transporte", why: "Evitar envio com transportadora incorreta", where: "Sistema / Expedição", when: "Imediato", who: "Janus Liu", how: "Ajuste sistêmico para emissão correta da etiqueta", status: "Ongoing" },
-    { what: "Correção do fluxo de shipping para itens L", why: "Garantir geração correta de shipping", where: "Sistema / WMS", when: "Imediato", who: "Janus Liu", how: "Correção da lógica de criação de shipping", status: "On Track" },
-    { what: "Correção de cadastro de fornecedores", why: "Evitar cancelamento e perda de pacotes", where: "Sistema / Cadastro", when: "Curto prazo", who: "Forest Liu", how: "Revisão de cadastro + ajuste de label sticker", status: "Ongoing" },
-    { what: "Monitoramento antecipado + investigação de perdas", why: "Evitar lost e melhorar rastreabilidade", where: "Operação / Armazém", when: "Imediato", who: "Loss Prevention", how: "Monitoramento proativo + reposicionamento de câmeras", status: "Delayed" },
-    { what: "Pacotes sorted já coletados", why: "Provável bug sistêmico", where: "Sistema / WMS", when: "Imediato", who: "Laisla e Klebio", how: "Fazer shipping dos pacotes que já tiveram movimentação", status: "Ongoing" },
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        background: "#0f172a",
+        border: "1px solid #1e293b",
+        borderRadius: "22px",
+        padding: "22px",
+        cursor: onClick ? "pointer" : "default",
+      }}
+    >
+      <p style={{ color: "#94a3b8", marginBottom: "10px" }}>{item.title}</p>
+
+      <h2 style={{ fontSize: "32px", margin: "0 0 8px 0" }}>
+        {formatPercent(value)}
+      </h2>
+
+      <p style={{ color: "#64748b", marginBottom: "12px" }}>
+        Target: {formatPercent(item.target)}
+      </p>
+
+      <StatusBadge status={onTrack ? "On Track" : "Ongoing"} />
+
+      <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>
+        Jan → Selected: {formatPercent(item.jan)} → {formatPercent(value)}
+      </p>
+    </div>
+  );
+}
+
+function TopCard({ title, value, color }) {
+  return (
+    <div
+      style={{
+        background: "#0f172a",
+        border: "1px solid #1e293b",
+        borderRadius: "16px",
+        padding: "14px 16px",
+        minHeight: "84px",
+      }}
+    >
+      <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "6px" }}>
+        {title}
+      </p>
+      <h2 style={{ fontSize: "28px", color, margin: 0 }}>{value}</h2>
+    </div>
+  );
+}
+
+function InsightCard({ title, text }) {
+  return (
+    <div
+      style={{
+        background: "#020617",
+        border: "1px solid #1e293b",
+        borderRadius: "18px",
+        padding: "20px",
+      }}
+    >
+      <h3 style={{ marginTop: 0, color: "#38bdf8", fontSize: "18px" }}>
+        {title}
+      </h3>
+      <p style={{ color: "#cbd5e1", lineHeight: 1.6, fontSize: "14px" }}>
+        {text}
+      </p>
+    </div>
+  );
+}
+
+function ActionPlan({ language }) {
+  const rows = [
+    {
+      action: "RTS monitoring routine",
+      owner: "Exception Team",
+      status: "On Track",
+    },
+    {
+      action: "System lock for cancelled packages",
+      owner: "System / WMS",
+      status: "Ongoing",
+    },
+    {
+      action: "Camera repositioning for loss investigation",
+      owner: "Loss Prevention",
+      status: "Delayed",
+    },
   ];
 
   return (
-    <section style={{ ...panel, marginBottom: "30px" }}>
-      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Return to Seller Action Plan</h2>
-      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-        Actions in progress to recover RTS performance and reduce future lost/cancellation risk.
-      </p>
+    <section style={{ ...panel, marginTop: "30px" }}>
+      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+        {language === "EN" ? "Action Plan" : "Plano de Ação"}
+      </h2>
 
-      <Table headers={["What", "Why", "Where", "When", "Who", "How", "Status"]}>
-        {actions.map((row) => (
-          <tr key={row.what} style={{ borderTop: "1px solid #1e293b" }}>
-            <td style={td}>{row.what}</td>
-            <td style={td}>{row.why}</td>
-            <td style={td}>{row.where}</td>
-            <td style={td}>{row.when}</td>
-            <td style={td}>{row.who}</td>
-            <td style={td}>{row.how}</td>
-            <td style={td}><StatusBadge status={row.status} /></td>
+      <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}>
+        <thead>
+          <tr style={{ color: "#94a3b8", textAlign: "left" }}>
+            <th style={th}>Action</th>
+            <th style={th}>Owner</th>
+            <th style={th}>Status</th>
           </tr>
-        ))}
-      </Table>
+        </thead>
+
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.action} style={{ borderTop: "1px solid #1e293b" }}>
+              <td style={td}>{row.action}</td>
+              <td style={td}>{row.owner}</td>
+              <td style={td}>
+                <StatusBadge status={row.status} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </section>
   );
 }
 
-function PredictiveInsights() {
-  return (
-    <section style={{ ...panel, marginBottom: "30px" }}>
-      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Predictive Warehouse Insights</h2>
-      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-        Prediction data base · Análise como especialista de warehouse ecommerce · Interferência entre KPIs
-      </p>
+function StatusBadge({ status }) {
+  let color = "#f59e0b";
+  let label = status;
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "18px" }}>
-        <InsightCard title="Prediction Analysis" text="A previsão operacional deve observar a combinação de SLA, Lost e Exception. Quando SLA cai e overdue cresce, existe tendência de aumento futuro em cancelamento e lost." />
-        <InsightCard title="KPI Interference" text="Overdue Consolidation Package interfere diretamente em Cancellation Rate e Lost Rate. O efeito normalmente aparece com defasagem operacional, por isso o LOST usa M-2." />
-        <InsightCard title="Warehouse Specialist Insight" text="Exception Rate, Empty Box e Short Picking impactam o fluxo de packing e podem gerar backlog, retrabalho e perda de produtividade no downstream." />
-        <InsightCard title="SLA Risk" text="On Time Delivery 15H e 1D são indicadores antecipados. Quando começam a deteriorar, Return to Seller e Lost tendem a piorar nas semanas seguintes." />
-      </div>
-    </section>
+  if (status === "On Track") {
+    color = "#22c55e";
+    label = "On Track";
+  }
+
+  if (status === "Ongoing") {
+    color = "#f59e0b";
+    label = "Ongoing";
+  }
+
+  if (status === "Delayed") {
+    color = "#ef4444";
+    label = "Delayed";
+  }
+
+  return (
+    <span
+      style={{
+        border: `1px solid ${color}`,
+        color,
+        background: `${color}22`,
+        padding: "7px 12px",
+        borderRadius: "999px",
+        fontWeight: "bold",
+        fontSize: "12px",
+        display: "inline-block",
+        minWidth: "82px",
+        textAlign: "center",
+      }}
+    >
+      {label}
+    </span>
   );
 }
 
-function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
+function Modal({ item, onClose, language }) {
+  const data = [
+    { month: "Jan", value: item.jan, target: item.target },
+    { month: "Feb", value: item.feb, target: item.target },
+    { month: "Mar", value: item.mar, target: item.target },
+    { month: "Apr", value: item.apr, target: item.target },
+  ];
+
   return (
-    <div onClick={close} style={modalOverlay}>
-      <div onClick={(e) => e.stopPropagation()} style={modalBox}>
-        <div style={{ display: "flex", justifyContent: "space-between", gap: "20px", alignItems: "start", marginBottom: "18px" }}>
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.72)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 999,
+        padding: "20px",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(900px, 100%)",
+          background: "#0f172a",
+          border: "1px solid #1e293b",
+          borderRadius: "24px",
+          padding: "30px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "22px",
+          }}
+        >
           <div>
-            <h2 style={{ margin: 0, fontSize: "28px" }}>{selectedKpi.title} · Monthly Evolution</h2>
-            <p style={{ color: "#94a3b8", marginTop: "8px" }}>{chartShift} · Target vs Actual</p>
+            <h2 style={{ fontSize: "28px", margin: 0 }}>{item.title}</h2>
+            <p style={{ color: "#94a3b8" }}>
+              {language === "EN" ? "Monthly evolution" : "Evolução mensal"}
+            </p>
           </div>
-          <button onClick={close} style={closeButton}>Close</button>
+
+          <button
+            onClick={onClose}
+            style={{
+              background: "#020617",
+              color: "#cbd5e1",
+              border: "1px solid #334155",
+              borderRadius: "999px",
+              padding: "8px 14px",
+              cursor: "pointer",
+            }}
+          >
+            Close
+          </button>
         </div>
 
-        <section style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
-          {shifts.map((shift) => <Button key={shift} active={chartShift === shift} onClick={() => setChartShift(shift)}>{shift}</Button>)}
-        </section>
-
-        <ResponsiveContainer width="100%" height={420}>
-          <LineChart
-            data={[
-              { month: "Jan", value: selectedKpi.jan, target: selectedKpi.target },
-              { month: "Fev", value: selectedKpi.feb, target: selectedKpi.target },
-              { month: "Mar", value: selectedKpi.mar, target: selectedKpi.target },
-              { month: "Abr", value: selectedKpi.apr, target: selectedKpi.target },
-            ]}
-            margin={{ top: 30, right: 30, left: 10, bottom: 10 }}
-          >
+        <ResponsiveContainer width="100%" height={380}>
+          <LineChart data={data} margin={{ top: 30, right: 30, left: 10, bottom: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis dataKey="month" stroke="#94a3b8" />
             <YAxis stroke="#94a3b8" />
             <Tooltip />
-            <Line type="monotone" dataKey="value" name="Actual" stroke="#38bdf8" strokeWidth={4} dot={{ r: 5 }}>
-              <LabelList dataKey="value" position="top" formatter={fmt} fill="#e5e7eb" fontSize={12} />
+
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke="#38bdf8"
+              strokeWidth={4}
+              dot={{ r: 5 }}
+            >
+              <LabelList
+                dataKey="value"
+                position="top"
+                formatter={formatPercent}
+                fill="#e5e7eb"
+                fontSize={12}
+              />
             </Line>
-            <Line type="monotone" dataKey="target" name="Target" stroke="#ef4444" strokeWidth={3} dot={false} />
+
+            <Line
+              type="monotone"
+              dataKey="target"
+              stroke="#ef4444"
+              strokeWidth={3}
+              dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -468,94 +946,74 @@ function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
   );
 }
 
-function SideButton({ active, onClick, children }) {
-  return (
-    <button onClick={onClick} style={{ width: "100%", textAlign: "left", marginBottom: "10px", padding: "12px 14px", borderRadius: "14px", border: active ? "1px solid #fb923c" : "1px solid #1e293b", background: active ? "rgba(251,146,60,0.16)" : "#0f172a", color: active ? "#fb923c" : "#cbd5e1", fontWeight: "bold", cursor: "pointer" }}>
-      {children}
-    </button>
-  );
+function sideButton(active) {
+  return {
+    width: "100%",
+    textAlign: "left",
+    marginBottom: "10px",
+    padding: "12px 14px",
+    borderRadius: "14px",
+    border: active ? "1px solid #fb923c" : "1px solid #1e293b",
+    background: active ? "rgba(251,146,60,0.16)" : "#0f172a",
+    color: active ? "#fb923c" : "#cbd5e1",
+    fontWeight: "bold",
+    cursor: "pointer",
+  };
 }
 
-function Button({ active, onClick, children, color = "#fb923c" }) {
-  return (
-    <button onClick={onClick} style={{ background: active ? color : "#0f172a", color: active ? "#020617" : "#cbd5e1", border: active ? `1px solid ${color}` : "1px solid #1e293b", borderRadius: "999px", padding: "10px 18px", fontWeight: "bold", cursor: "pointer" }}>
-      {children}
-    </button>
-  );
+function filterButton(active, color) {
+  return {
+    background: active ? color : "#0f172a",
+    color: active ? "#020617" : "#cbd5e1",
+    border: active ? `1px solid ${color}` : "1px solid #1e293b",
+    borderRadius: "999px",
+    padding: "10px 18px",
+    fontWeight: "bold",
+    cursor: "pointer",
+  };
 }
 
-function TopCard({ title, value, color }) {
-  return (
-    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "16px", padding: "14px 16px", minHeight: "84px" }}>
-      <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "6px" }}>{title}</p>
-      <h2 style={{ fontSize: "28px", color, margin: 0 }}>{value}</h2>
-    </div>
-  );
+function formatPercent(value) {
+  return `${Number(value).toLocaleString("pt-BR", {
+    minimumFractionDigits: Number(value) < 1 ? 3 : 2,
+    maximumFractionDigits: Number(value) < 1 ? 3 : 2,
+  })}%`;
 }
 
-function KpiCard({ item, onClick }) {
-  const status = getStatus(item);
-  const color = getColor(status);
-  const delta = deltaValue(item);
-  const deltaGood = delta >= 0;
+const clusterSection = {
+  background: "#020617",
+  border: "1px solid #1e293b",
+  borderRadius: "26px",
+  padding: "24px",
+  marginBottom: "30px",
+};
 
-  return (
-    <div onClick={onClick} style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "22px", padding: "22px", cursor: onClick ? "pointer" : "default" }}>
-      <p style={{ color: "#94a3b8", marginBottom: "10px" }}>{item.title}</p>
-      <h2 style={{ fontSize: "32px", margin: "0 0 8px 0" }}>{fmt(item.value ?? item.apr)}</h2>
-      <p style={{ color: "#64748b", marginBottom: "12px" }}>Target: {fmt(item.target)}</p>
-      <span style={{ border: `1px solid ${color}`, color, padding: "6px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "bold" }}>
-        {status}
-      </span>
-      <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>Jan → Selected: {fmt(item.jan)} → {fmt(item.value ?? item.apr)}</p>
-      <p style={{ color: deltaGood ? "#22c55e" : "#ef4444", fontSize: "13px", marginTop: "6px" }}>Delta: {deltaGood ? "+" : ""}{fmt(delta)}</p>
-      {item.cluster === "LOST" && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>Using M-2 result</p>}
-    </div>
-  );
-}
+const clusterTitle = {
+  fontSize: "26px",
+  margin: 0,
+  color: "#e5e7eb",
+  letterSpacing: "1px",
+};
 
-function ShiftPill({ value, target, direction }) {
-  const ok = direction === "lower" ? value <= target : value >= target;
-  const color = ok ? "#22c55e" : "#f59e0b";
-  return <span style={{ display: "inline-block", minWidth: "86px", textAlign: "center", border: `1px solid ${color}`, color, borderRadius: "999px", padding: "7px 10px", fontWeight: "bold", fontSize: "12px" }}>{fmt(value)}</span>;
-}
+const clusterSubtitle = {
+  color: "#94a3b8",
+  marginTop: "6px",
+};
 
-function StatusBadge({ status }) {
-  const color = status === "On Track" ? "#22c55e" : status === "Delayed" ? "#ef4444" : "#f59e0b";
-  return <span style={{ border: `1px solid ${color}`, color, borderRadius: "999px", padding: "7px 12px", fontWeight: "bold", fontSize: "12px" }}>{status}</span>;
-}
+const panel = {
+  background: "#0f172a",
+  border: "1px solid #1e293b",
+  borderRadius: "8px",
+  padding: "22px",
+};
 
-function InsightCard({ title, text }) {
-  return (
-    <div style={{ background: "#020617", border: "1px solid #1e293b", borderRadius: "18px", padding: "20px" }}>
-      <h3 style={{ marginTop: 0, marginBottom: "10px", color: "#38bdf8", fontSize: "18px" }}>{title}</h3>
-      <p style={{ color: "#cbd5e1", lineHeight: 1.6, fontSize: "14px" }}>{text}</p>
-    </div>
-  );
-}
+const th = {
+  padding: "14px",
+  borderBottom: "1px solid #334155",
+};
 
-function Table({ headers, children }) {
-  return (
-    <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
-        <thead>
-          <tr style={{ color: "#94a3b8", textAlign: "left" }}>
-            {headers.map((header) => <th key={header} style={th}>{header}</th>)}
-          </tr>
-        </thead>
-        <tbody>{children}</tbody>
-      </table>
-    </div>
-  );
-}
-
-const sidebar = { width: "250px", borderRight: "1px solid #1e293b", background: "#020617", padding: "24px", position: "sticky", top: 0, height: "100vh" };
-const clusterSection = { background: "#020617", border: "1px solid #1e293b", borderRadius: "26px", padding: "24px", marginBottom: "30px" };
-const clusterTitle = { fontSize: "26px", margin: 0, color: "#e5e7eb", letterSpacing: "1px" };
-const clusterSubtitle = { color: "#94a3b8", marginTop: "6px" };
-const panel = { background: "#0f172a", border: "1px solid #1e293b", borderRadius: "8px", padding: "22px" };
-const th = { padding: "14px", borderBottom: "1px solid #334155" };
-const td = { padding: "14px", color: "#cbd5e1" };
-const modalOverlay = { position: "fixed", inset: 0, background: "rgba(0,0,0,0.72)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999, padding: "20px" };
-const modalBox = { width: "min(920px, 100%)", background: "#0f172a", border: "1px solid #1e293b", borderRadius: "24px", padding: "30px" };
-const closeButton = { background: "#020617", color: "#cbd5e1", border: "1px solid #334155", borderRadius: "999px", padding: "8px 14px", cursor: "pointer" };
+const td = {
+  padding: "14px",
+  color: "#cbd5e1",
+};
+  };
