@@ -33,47 +33,27 @@ const shiftData = [
 ];
 
 const healthData = [
-  { name: "On Track", value: 6 },
-  { name: "Attention", value: 3 },
-  { name: "Critical", value: 2 },
+  { name: "On Track", value: 10 },
+  { name: "Attention", value: 0 },
+  { name: "Critical", value: 1 },
 ];
-
-/* =========================
-   HELPERS
-========================= */
 
 function fmt(v) {
   return `${v.toFixed(2)}%`;
 }
 
 /* =========================
-   PAGE
+   COMPONENT
 ========================= */
 
-export default function Dashboard() {
+export default function ChartsSection() {
   return (
-    <main
-      style={{
-        background: "#020617",
-        color: "white",
-        minHeight: "100vh",
-        padding: "40px",
-        fontFamily: "Arial",
-      }}
-    >
-      <h1 style={{ fontSize: "42px", marginBottom: "8px" }}>
-        Executive Scorecard
-      </h1>
-
-      <p style={{ color: "#94a3b8", marginBottom: "40px" }}>
-        Monthly + Shift Performance View
-      </p>
-
+    <>
       {/* ===================== */}
       {/* MONTHLY TREND */}
       {/* ===================== */}
 
-      <Card title="Exception Rate · Monthly">
+      <Card title="Exception Rate · Monthly Trend">
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart data={monthlyData}>
             <CartesianGrid stroke="#1e293b" />
@@ -83,14 +63,18 @@ export default function Dashboard() {
 
             <Tooltip />
 
-            <Bar dataKey="value" fill="rgba(59,130,246,0.4)">
+            <Bar
+              dataKey="value"
+              fill="rgba(59,130,246,0.25)"
+              radius={[6, 6, 0, 0]}
+            >
               <LabelList dataKey="value" formatter={fmt} />
             </Bar>
 
             <Line
               dataKey="target"
               stroke="#ef4444"
-              strokeWidth={3}
+              strokeWidth={2}
               dot={false}
             />
           </ComposedChart>
@@ -101,23 +85,34 @@ export default function Dashboard() {
       {/* SHIFT ANALYSIS */}
       {/* ===================== */}
 
-      <Card title="Shift Performance Comparison">
+      <Card title="Performance by Shift">
         <ResponsiveContainer width="100%" height={300}>
           <ComposedChart data={shiftData}>
             <CartesianGrid stroke="#1e293b" />
+
             <XAxis dataKey="shift" stroke="#94a3b8" />
             <YAxis stroke="#94a3b8" />
+
             <Tooltip />
 
-            <Bar dataKey="exception" fill="rgba(59,130,246,0.4)">
+            <Bar
+              dataKey="exception"
+              fill="rgba(59,130,246,0.25)"
+            >
               <LabelList dataKey="exception" formatter={fmt} />
             </Bar>
 
-            <Bar dataKey="irdr" fill="rgba(139,92,246,0.4)">
+            <Bar
+              dataKey="irdr"
+              fill="rgba(139,92,246,0.25)"
+            >
               <LabelList dataKey="irdr" formatter={fmt} />
             </Bar>
 
-            <Bar dataKey="lost" fill="rgba(244,63,94,0.4)">
+            <Bar
+              dataKey="lost"
+              fill="rgba(239,68,68,0.25)"
+            >
               <LabelList dataKey="lost" formatter={fmt} />
             </Bar>
           </ComposedChart>
@@ -128,7 +123,7 @@ export default function Dashboard() {
       {/* KPI HEALTH */}
       {/* ===================== */}
 
-      <Card title="KPI Health Distribution">
+      <Card title="KPI Health">
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
@@ -138,22 +133,21 @@ export default function Dashboard() {
               innerRadius={70}
               outerRadius={110}
             >
-              <Cell fill="rgba(34,197,94,0.5)" />
-              <Cell fill="rgba(245,158,11,0.5)" />
-              <Cell fill="rgba(239,68,68,0.5)" />
+              <Cell fill="rgba(34,197,94,0.4)" />
+              <Cell fill="rgba(245,158,11,0.4)" />
+              <Cell fill="rgba(239,68,68,0.4)" />
             </Pie>
-
             <Tooltip />
           </PieChart>
         </ResponsiveContainer>
       </Card>
 
       {/* ===================== */}
-      {/* HEATMAP (MELHOR QUE RANKING) */}
+      {/* HEATMAP (MELHOR INSIGHT) */}
       {/* ===================== */}
 
-      <Card title="Shift Heatmap (KPI vs Performance)">
-        <table style={{ width: "100%", marginTop: "20px" }}>
+      <Card title="Shift Heatmap">
+        <table style={{ width: "100%" }}>
           <thead>
             <tr>
               <th>Shift</th>
@@ -168,15 +162,15 @@ export default function Dashboard() {
               <tr key={row.shift}>
                 <td>{row.shift}</td>
 
-                <td style={heatColor(row.exception)}>
+                <td style={heat(row.exception)}>
                   {fmt(row.exception)}
                 </td>
 
-                <td style={heatColor(row.irdr)}>
+                <td style={heat(row.irdr)}>
                   {fmt(row.irdr)}
                 </td>
 
-                <td style={heatColor(row.lost)}>
+                <td style={heat(row.lost)}>
                   {fmt(row.lost)}
                 </td>
               </tr>
@@ -184,7 +178,7 @@ export default function Dashboard() {
           </tbody>
         </table>
       </Card>
-    </main>
+    </>
   );
 }
 
@@ -199,8 +193,8 @@ function Card({ title, children }) {
         background: "#0f172a",
         border: "1px solid #1e293b",
         borderRadius: "20px",
-        padding: "30px",
-        marginBottom: "30px",
+        padding: "25px",
+        marginTop: "30px",
       }}
     >
       <h2 style={{ marginBottom: "20px" }}>{title}</h2>
@@ -209,11 +203,11 @@ function Card({ title, children }) {
   );
 }
 
-function heatColor(value) {
-  let color = "rgba(34,197,94,0.2)";
+function heat(value) {
+  let color = "rgba(34,197,94,0.15)";
 
-  if (value > 0.4) color = "rgba(239,68,68,0.3)";
-  else if (value > 0.2) color = "rgba(245,158,11,0.3)";
+  if (value > 0.4) color = "rgba(239,68,68,0.25)";
+  else if (value > 0.2) color = "rgba(245,158,11,0.25)";
 
   return {
     background: color,
