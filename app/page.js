@@ -1,26 +1,5 @@
 "use client";
 
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ComposedChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  RadialBarChart,
-  RadialBar,
-} from "recharts";
-
-/* =========================
-   KPI DATA COMPLETA
-========================= */
-
 const kpis = [
   { title: "Capital Loss Rate", area: "Loss", target: 0.095, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001, value: 0.001, unit: "%", direction: "lower" },
   { title: "Operation Difference Rate", area: "Operation", target: 0.27, jan: 0.06, feb: 0.05, mar: 0.05, apr: 0.06, value: 0.06, unit: "%", direction: "lower" },
@@ -49,22 +28,46 @@ const kpis = [
   { title: "Wrongly Count", area: "Inventory", target: 1.00, jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06, value: 0.06, unit: "%", direction: "lower" },
 ];
 
-/* =========================
-   LOGIC
-========================= */
+const attentionByShift = [
+  {
+    kpi: "3P On Time Return to Seller 2D",
+    target: 95,
+    direction: "higher",
+    morning: 49.1,
+    afternoon: 24.5,
+    night: 36.7,
+    comment: "Principal risco operacional. Todos os turnos abaixo da meta, com maior gap no Afternoon.",
+  },
+  {
+    kpi: "On Time Delivery Rate 15H",
+    target: 95,
+    direction: "higher",
+    morning: 78.74,
+    afternoon: 78.74,
+    night: 78.74,
+    comment: "Indicador ainda em fase de estabilização, abaixo da meta de 95%.",
+  },
+  {
+    kpi: "On Time Delivery Rate 1D",
+    target: 95,
+    direction: "higher",
+    morning: 94.91,
+    afternoon: 94.91,
+    night: 94.91,
+    comment: "Muito próximo da meta. Pequena variação operacional pode virar On Track.",
+  },
+];
 
 function isOnTrack(kpi) {
   return kpi.direction === "lower" ? kpi.value <= kpi.target : kpi.value >= kpi.target;
 }
 
 function getStatus(kpi) {
-  if (isOnTrack(kpi)) return "On Track";
-  return "Attention";
+  return isOnTrack(kpi) ? "On Track" : "Attention";
 }
 
 function getColor(status) {
-  if (status === "On Track") return "#22c55e";
-  return "#f59e0b";
+  return status === "On Track" ? "#22c55e" : "#f59e0b";
 }
 
 function fmt(value) {
@@ -74,9 +77,9 @@ function fmt(value) {
   })}%`;
 }
 
-/* =========================
-   MAIN
-========================= */
+function deltaValue(item) {
+  return item.direction === "lower" ? item.jan - item.apr : item.apr - item.jan;
+}
 
 export default function Dashboard() {
   const onTrack = kpis.filter((k) => getStatus(k) === "On Track").length;
@@ -84,39 +87,84 @@ export default function Dashboard() {
 
   return (
     <main style={{ background: "#020617", minHeight: "100vh", color: "white", padding: "40px", fontFamily: "Arial" }}>
+      <header style={{ marginBottom: "32px" }}>
+        <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>
+          SHEIN WHA · EXCEPTION HANDLING & INVENTORY
+        </p>
 
-      <header style={{ marginBottom: "40px" }}>
-        <p style={{ color: "#fb923c", fontWeight: "bold" }}>SHEIN WHA · EXCEPTION HANDLING & INVENTORY</p>
-        <h1 style={{ fontSize: "44px" }}>Executive Scorecard Dashboard</h1>
+        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>
+          Executive Scorecard Dashboard
+        </h1>
+
+        <p style={{ color: "#94a3b8", fontSize: "18px" }}>
+          Monthly performance view · January to April · Target vs Actual
+        </p>
       </header>
 
-      {/* TOP CARDS */}
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "20px", marginBottom: "40px" }}>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(160px, 220px))", gap: "16px", marginBottom: "36px" }}>
         <TopCard title="Total KPIs" value={kpis.length} color="#38bdf8" />
         <TopCard title="On Track" value={onTrack} color="#22c55e" />
         <TopCard title="Attention" value={attention} color="#f59e0b" />
       </section>
 
-      {/* KPI CARDS */}
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: "20px" }}>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: "18px", marginBottom: "40px" }}>
         {kpis.map((item) => (
           <KpiCard key={item.title} item={item} />
         ))}
       </section>
 
+      <section style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "24px", padding: "28px", marginBottom: "40px" }}>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+          Attention Indicators · Shift Deep Dive
+        </h2>
+
+        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
+          Análise detalhada dos indicadores fora da meta, separados por turno.
+        </p>
+
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+            <thead>
+              <tr style={{ color: "#94a3b8", textAlign: "left" }}>
+                <th style={th}>KPI</th>
+                <th style={th}>Target</th>
+                <th style={th}>Morning</th>
+                <th style={th}>Afternoon</th>
+                <th style={th}>Night</th>
+                <th style={th}>Main Insight</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {attentionByShift.map((row) => (
+                <tr key={row.kpi} style={{ borderTop: "1px solid #1e293b" }}>
+                  <td style={td}>{row.kpi}</td>
+                  <td style={td}>{fmt(row.target)}</td>
+                  <td style={td}>
+                    <ShiftPill value={row.morning} target={row.target} direction={row.direction} />
+                  </td>
+                  <td style={td}>
+                    <ShiftPill value={row.afternoon} target={row.target} direction={row.direction} />
+                  </td>
+                  <td style={td}>
+                    <ShiftPill value={row.night} target={row.target} direction={row.direction} />
+                  </td>
+                  <td style={{ ...td, color: "#cbd5e1" }}>{row.comment}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
   );
 }
 
-/* =========================
-   COMPONENTS
-========================= */
-
 function TopCard({ title, value, color }) {
   return (
-    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "24px", padding: "24px" }}>
-      <p style={{ color: "#94a3b8" }}>{title}</p>
-      <h2 style={{ fontSize: "38px", color }}>{value}</h2>
+    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "18px", padding: "18px 20px", minHeight: "110px" }}>
+      <p style={{ color: "#94a3b8", fontSize: "14px", marginBottom: "8px" }}>{title}</p>
+      <h2 style={{ fontSize: "32px", color, margin: 0 }}>{value}</h2>
     </div>
   );
 }
@@ -124,16 +172,53 @@ function TopCard({ title, value, color }) {
 function KpiCard({ item }) {
   const status = getStatus(item);
   const color = getColor(status);
+  const delta = deltaValue(item);
+  const deltaGood = delta >= 0;
 
   return (
-    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "24px", padding: "24px" }}>
-      <p style={{ color: "#94a3b8" }}>{item.title}</p>
-      <h2 style={{ fontSize: "34px" }}>{fmt(item.value)}</h2>
-      <p style={{ color: "#64748b" }}>Target: {fmt(item.target)}</p>
+    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "22px", padding: "22px" }}>
+      <p style={{ color: "#94a3b8", marginBottom: "10px" }}>{item.title}</p>
 
-      <span style={{ border: `1px solid ${color}`, color, padding: "6px 12px", borderRadius: "999px" }}>
+      <h2 style={{ fontSize: "32px", margin: "0 0 8px 0" }}>
+        {fmt(item.value)}
+      </h2>
+
+      <p style={{ color: "#64748b", marginBottom: "12px" }}>
+        Target: {fmt(item.target)}
+      </p>
+
+      <span style={{ border: `1px solid ${color}`, color, padding: "6px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "bold" }}>
         {status}
       </span>
+
+      <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>
+        Jan → Abr: {fmt(item.jan)} → {fmt(item.apr)}
+      </p>
+
+      <p style={{ color: deltaGood ? "#22c55e" : "#ef4444", fontSize: "13px", marginTop: "6px" }}>
+        Delta: {deltaGood ? "+" : ""}{fmt(delta)}
+      </p>
     </div>
   );
 }
+
+function ShiftPill({ value, target, direction }) {
+  const ok = direction === "lower" ? value <= target : value >= target;
+  const color = ok ? "#22c55e" : "#f59e0b";
+
+  return (
+    <span style={{ display: "inline-block", minWidth: "86px", textAlign: "center", border: `1px solid ${color}`, color, borderRadius: "999px", padding: "7px 10px", fontWeight: "bold", fontSize: "12px" }}>
+      {fmt(value)}
+    </span>
+  );
+}
+
+const th = {
+  padding: "14px",
+  borderBottom: "1px solid #334155",
+};
+
+const td = {
+  padding: "14px",
+  color: "#cbd5e1",
+};
