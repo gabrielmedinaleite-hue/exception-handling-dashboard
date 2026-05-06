@@ -44,6 +44,68 @@ const baseKpis = [
   { title: "Mis-ship Rate", cluster: "TICKET", area: "Shipping", target: 0.15, direction: "lower", shifts: { Total: { jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04 }, Morning: { jan: 0.12, feb: 0.04, mar: 0.08, apr: 0.05 }, Afternoon: { jan: 0.14, feb: 0.04, mar: 0.07, apr: 0.04 }, Night: { jan: 0.09, feb: 0.05, mar: 0.06, apr: 0.04 } } },
 ];
 
+const translations = {
+  en: {
+    subtitle: "Monthly performance view · Target vs Actual",
+    totalKpis: "Total KPIs",
+    onTrack: "On Track",
+    attention: "Attention",
+    indicators: "indicators",
+    attentionLabel: "attention",
+    selected: "Selected",
+    target: "Target",
+    deepDive: "Attention Indicators",
+    deepDiveText: "Indicators outside target in the selected view. For LOST cluster, result always considers M-2.",
+    current: "Current",
+    mainInsight: "Main Insight",
+    periodUsed: "Period Used",
+    actionTitle: "Return to Seller Action Plan",
+    actionSubtitle: "Actions in progress to recover RTS performance and reduce future lost/cancellation risk.",
+    insightsTitle: "Predictive Warehouse Insights",
+    insightsSubtitle: "Prediction data base · Ecommerce warehouse specialist analysis · KPI interference",
+    close: "Close",
+    monthlyEvolution: "Monthly Evolution",
+    actual: "Actual",
+    usingM2: "Using M-2 result",
+    lowSla: "Below target. Recovery plan required to protect SLA.",
+    highLoss: "Above target. RCA required by process and owner.",
+  },
+  pt: {
+    subtitle: "Visão mensal · Meta vs Real",
+    totalKpis: "Total KPIs",
+    onTrack: "Dentro da Meta",
+    attention: "Atenção",
+    indicators: "indicadores",
+    attentionLabel: "em atenção",
+    selected: "Selecionado",
+    target: "Meta",
+    deepDive: "Indicadores em Atenção",
+    deepDiveText: "Indicadores fora da meta na visão selecionada. Para o cluster LOST, o resultado considera sempre M-2.",
+    current: "Atual",
+    mainInsight: "Insight Principal",
+    periodUsed: "Período Usado",
+    actionTitle: "Plano de Ação Return to Seller",
+    actionSubtitle: "Ações em andamento para recuperar o RTS e reduzir risco futuro de lost/cancelamento.",
+    insightsTitle: "Insights Preditivos de Warehouse",
+    insightsSubtitle: "Base de previsão · Análise de especialista em warehouse ecommerce · Interferência entre KPIs",
+    close: "Fechar",
+    monthlyEvolution: "Evolução Mensal",
+    actual: "Real",
+    usingM2: "Usando resultado M-2",
+    lowSla: "Abaixo da meta. Necessário plano de recuperação do SLA.",
+    highLoss: "Acima da meta. Necessário RCA por processo e owner.",
+  },
+};
+
+const actionPlan = [
+  { what: "Frente de caixa", why: "Reter pacotes cancelados no packing", where: "Packing", when: "2025-2026", who: "Janus Liu", how: "Inserir bloqueio sistêmico no WMS", status: "🔄 Ongoing" },
+  { what: "Correção do sistema de etiqueta de transporte", why: "Evitar envio com transportadora incorreta (etiqueta antiga)", where: "Sistema / Expedição", when: "Imediato", who: "Janus Liu", how: "Ajuste sistêmico para emissão correta da etiqueta", status: "🔄 Ongoing" },
+  { what: "Correção do fluxo de shipping para itens L", why: "Garantir geração correta de shipping e evitar falhas no envio", where: "Sistema / WMS", when: "Imediato", who: "Janus Liu", how: "Correção da lógica de criação de shipping", status: "🔄 Ongoing" },
+  { what: "Correção de cadastro de fornecedores (label sticker)", why: "Evitar cancelamento e perda de pacotes (lost)", where: "Sistema / Cadastro", when: "Curto prazo", who: "Forest Liu", how: "Revisão de cadastro + ajuste de label sticker", status: "🔄 Ongoing" },
+  { what: "Monitoramento antecipado + investigação de perdas", why: "Evitar que pacotes virem lost e melhorar rastreabilidade", where: "Operação / Armazém", when: "Imediato", who: "Loss Prevention", how: "Monitoramento proativo + reposicionamento de câmeras", status: "🔄 Ongoing" },
+  { what: "Pacotes com status de sorted já foram coletados", why: "Provavelmente outro bug sistêmico", where: "Sistema / WMS", when: "Imediato", who: "Laisla e Klebio", how: "Fazer o shipping desses pacotes já que houve movimentação", status: "🔄 Ongoing" },
+];
+
 const clusters = ["EXCEPTION", "HANDOVER", "SLA", "LOST", "INVENTORY", "TICKET"];
 const shifts = ["Total", "Morning", "Afternoon", "Night"];
 const months = [
@@ -60,7 +122,6 @@ function getEffectiveMonth(kpi, selectedMonth) {
 function buildKpisByShift(shift, selectedMonth) {
   return baseKpis.map((item) => {
     const monthKey = getEffectiveMonth(item, selectedMonth);
-
     return {
       title: item.title,
       cluster: item.cluster,
@@ -116,7 +177,9 @@ export default function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState("apr");
   const [selectedKpiTitle, setSelectedKpiTitle] = useState(null);
   const [chartShift, setChartShift] = useState("Total");
+  const [lang, setLang] = useState("en");
 
+  const t = translations[lang];
   const kpis = buildKpisByShift(selectedShift, selectedMonth);
   const selectedKpi = selectedKpiTitle ? buildSingleKpi(selectedKpiTitle, chartShift) : null;
 
@@ -130,19 +193,25 @@ export default function Dashboard() {
       target: kpi.target,
       current: kpi.value,
       jan: kpi.jan,
-      selectedValue: kpi.value,
       direction: kpi.direction,
       effectiveMonth: kpi.effectiveMonth,
     }));
 
   return (
     <main style={{ background: "#020617", minHeight: "100vh", color: "white", padding: "34px", fontFamily: "Arial" }}>
-      <header style={{ marginBottom: "28px" }}>
-        <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · EXCEPTION HANDLING & INVENTORY</p>
-        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>Executive Scorecard Dashboard</h1>
-        <p style={{ color: "#94a3b8", fontSize: "18px" }}>
-          Monthly performance view · Target vs Actual · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
-        </p>
+      <header style={{ marginBottom: "28px", display: "flex", justifyContent: "space-between", gap: "20px", alignItems: "start" }}>
+        <div>
+          <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · EXCEPTION HANDLING & INVENTORY</p>
+          <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>Executive Scorecard Dashboard</h1>
+          <p style={{ color: "#94a3b8", fontSize: "18px" }}>
+            {t.subtitle} · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
+          </p>
+        </div>
+
+        <div style={{ display: "flex", gap: "8px" }}>
+          <Button active={lang === "en"} onClick={() => setLang("en")}>EN</Button>
+          <Button active={lang === "pt"} onClick={() => setLang("pt")}>PT</Button>
+        </div>
       </header>
 
       <section style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
@@ -162,9 +231,9 @@ export default function Dashboard() {
       </section>
 
       <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 180px)", gap: "14px", marginBottom: "30px" }}>
-        <TopCard title="Total KPIs" value={kpis.length} color="#38bdf8" />
-        <TopCard title="On Track" value={onTrack} color="#22c55e" />
-        <TopCard title="Attention" value={attention} color="#f59e0b" />
+        <TopCard title={t.totalKpis} value={kpis.length} color="#38bdf8" />
+        <TopCard title={t.onTrack} value={onTrack} color="#22c55e" />
+        <TopCard title={t.attention} value={attention} color="#f59e0b" />
       </section>
 
       {clusters.map((cluster) => {
@@ -177,8 +246,8 @@ export default function Dashboard() {
               <div>
                 <h2 style={clusterTitle}>{cluster}</h2>
                 <p style={clusterSubtitle}>
-                  {clusterKpis.length} indicators · {clusterAttention} attention · {selectedShift}
-                  {cluster === "LOST" ? " · Result based on Mar (M-2)" : ""}
+                  {clusterKpis.length} {t.indicators} · {clusterAttention} {t.attentionLabel} · {selectedShift}
+                  {cluster === "LOST" ? " · M-2" : ""}
                 </p>
               </div>
             </div>
@@ -188,6 +257,7 @@ export default function Dashboard() {
                 <KpiCard
                   key={item.title}
                   item={item}
+                  t={t}
                   onClick={() => {
                     setSelectedKpiTitle(item.title);
                     setChartShift(selectedShift);
@@ -200,21 +270,19 @@ export default function Dashboard() {
       })}
 
       <section style={{ ...panel, marginBottom: "30px" }}>
-        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Attention Indicators · {selectedShift} Deep Dive</h2>
-        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-          Indicadores fora da meta na visão selecionada. Para o cluster LOST, o resultado considera sempre M-2.
-        </p>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.deepDive} · {selectedShift}</h2>
+        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>{t.deepDiveText}</p>
 
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
             <thead>
               <tr style={{ color: "#94a3b8", textAlign: "left" }}>
                 <th style={th}>KPI</th>
-                <th style={th}>Target</th>
+                <th style={th}>{t.target}</th>
                 <th style={th}>Jan</th>
-                <th style={th}>Period Used</th>
-                <th style={th}>Current</th>
-                <th style={th}>Main Insight</th>
+                <th style={th}>{t.periodUsed}</th>
+                <th style={th}>{t.current}</th>
+                <th style={th}>{t.mainInsight}</th>
               </tr>
             </thead>
 
@@ -227,7 +295,7 @@ export default function Dashboard() {
                   <td style={td}>{row.effectiveMonth.toUpperCase()}</td>
                   <td style={td}><ShiftPill value={row.current} target={row.target} direction={row.direction} /></td>
                   <td style={{ ...td, color: "#cbd5e1" }}>
-                    {row.direction === "higher" ? "Abaixo da meta. Necessário plano de recuperação do SLA." : "Acima da meta. Necessário RCA por processo e owner."}
+                    {row.direction === "higher" ? t.lowSla : t.highLoss}
                   </td>
                 </tr>
               ))}
@@ -237,10 +305,42 @@ export default function Dashboard() {
       </section>
 
       <section style={{ ...panel, marginBottom: "30px" }}>
-        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Predictive Warehouse Insights</h2>
-        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-          Prediction data base · Análise como especialista de warehouse ecommerce · Interferência entre KPIs
-        </p>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.actionTitle}</h2>
+        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>{t.actionSubtitle}</p>
+
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+            <thead>
+              <tr style={{ color: "#94a3b8", textAlign: "left" }}>
+                <th style={th}>What</th>
+                <th style={th}>Why</th>
+                <th style={th}>Where</th>
+                <th style={th}>When</th>
+                <th style={th}>Who</th>
+                <th style={th}>How</th>
+                <th style={th}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {actionPlan.map((row) => (
+                <tr key={row.what} style={{ borderTop: "1px solid #1e293b" }}>
+                  <td style={td}>{row.what}</td>
+                  <td style={td}>{row.why}</td>
+                  <td style={td}>{row.where}</td>
+                  <td style={td}>{row.when}</td>
+                  <td style={td}>{row.who}</td>
+                  <td style={td}>{row.how}</td>
+                  <td style={td}>{row.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section style={{ ...panel, marginBottom: "30px" }}>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.insightsTitle}</h2>
+        <p style={{ color: "#94a3b8", marginBottom: "24px" }}>{t.insightsSubtitle}</p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "18px" }}>
           <InsightCard title="Prediction Analysis" text="A previsão operacional deve observar a combinação de SLA, Lost e Exception. Quando SLA cai e overdue cresce, existe tendência de aumento futuro em cancelamento e lost." />
@@ -248,7 +348,6 @@ export default function Dashboard() {
           <InsightCard title="Warehouse Specialist Insight" text="Exception Rate, Empty Box e Short Picking impactam o fluxo de packing e podem gerar backlog, retrabalho e perda de produtividade no downstream." />
           <InsightCard title="SLA Risk" text="On Time Delivery 15H e 1D são indicadores antecipados. Quando começam a deteriorar, Return to Seller e Lost tendem a piorar nas semanas seguintes." />
           <InsightCard title="Quality Chain" text="Abnormal Shelving e Miss Packing podem aumentar Mis-ship Rate, tickets e reclamações do cliente. O controle preventivo deve acontecer antes do shipping." />
-          <InsightCard title="Executive Recommendation" text="Priorizar ações onde há efeito cascata: SLA → Overdue → Cancellation → Lost. Essa cadeia deve ser acompanhada semanalmente por turno e owner." />
         </div>
       </section>
 
@@ -257,10 +356,10 @@ export default function Dashboard() {
           <div onClick={(e) => e.stopPropagation()} style={modalBox}>
             <div style={{ display: "flex", justifyContent: "space-between", gap: "20px", alignItems: "start", marginBottom: "18px" }}>
               <div>
-                <h2 style={{ margin: 0, fontSize: "28px" }}>{selectedKpi.title} · Monthly Evolution</h2>
-                <p style={{ color: "#94a3b8", marginTop: "8px" }}>{chartShift} · Target vs Actual</p>
+                <h2 style={{ margin: 0, fontSize: "28px" }}>{selectedKpi.title} · {t.monthlyEvolution}</h2>
+                <p style={{ color: "#94a3b8", marginTop: "8px" }}>{chartShift} · {t.target} vs {t.actual}</p>
               </div>
-              <button onClick={() => setSelectedKpiTitle(null)} style={closeButton}>Close</button>
+              <button onClick={() => setSelectedKpiTitle(null)} style={closeButton}>{t.close}</button>
             </div>
 
             <section style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
@@ -315,7 +414,7 @@ function TopCard({ title, value, color }) {
   );
 }
 
-function KpiCard({ item, onClick }) {
+function KpiCard({ item, onClick, t }) {
   const status = getStatus(item);
   const color = getColor(status);
   const delta = deltaValue(item);
@@ -325,15 +424,11 @@ function KpiCard({ item, onClick }) {
     <div onClick={onClick} style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "22px", padding: "22px", cursor: "pointer" }}>
       <p style={{ color: "#94a3b8", marginBottom: "10px" }}>{item.title}</p>
       <h2 style={{ fontSize: "32px", margin: "0 0 8px 0" }}>{fmt(item.value)}</h2>
-      <p style={{ color: "#64748b", marginBottom: "12px" }}>Target: {fmt(item.target)}</p>
-      <span style={{ border: `1px solid ${color}`, color, padding: "6px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "bold" }}>
-        {status}
-      </span>
-      <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>Jan → Selected: {fmt(item.jan)} → {fmt(item.value)}</p>
-      <p style={{ color: deltaGood ? "#22c55e" : "#ef4444", fontSize: "13px", marginTop: "6px" }}>
-        Delta: {deltaGood ? "+" : ""}{fmt(delta)}
-      </p>
-      {item.cluster === "LOST" && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>Using M-2 result</p>}
+      <p style={{ color: "#64748b", marginBottom: "12px" }}>{t.target}: {fmt(item.target)}</p>
+      <span style={{ border: `1px solid ${color}`, color, padding: "6px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "bold" }}>{status}</span>
+      <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>Jan → {t.selected}: {fmt(item.jan)} → {fmt(item.value)}</p>
+      <p style={{ color: deltaGood ? "#22c55e" : "#ef4444", fontSize: "13px", marginTop: "6px" }}>Delta: {deltaGood ? "+" : ""}{fmt(delta)}</p>
+      {item.cluster === "LOST" && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>{t.usingM2}</p>}
     </div>
   );
 }
