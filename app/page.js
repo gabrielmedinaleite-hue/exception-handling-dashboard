@@ -1,61 +1,76 @@
 "use client";
 
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ComposedChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  RadialBarChart,
+  RadialBar,
+  LabelList,
+} from "recharts";
+
 const kpis = [
-  { title: "Capital Loss Rate", area: "Loss", target: 0.095, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001, value: 0.001, unit: "%", direction: "lower" },
-  { title: "Operation Difference Rate", area: "Operation", target: 0.27, jan: 0.06, feb: 0.05, mar: 0.05, apr: 0.06, value: 0.06, unit: "%", direction: "lower" },
-  { title: "Exception Rate", area: "Receiving", target: 0.96, jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31, value: 0.31, unit: "%", direction: "lower" },
-  { title: "Empty Box", area: "Receiving", target: 0.20, jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14, value: 0.14, unit: "%", direction: "lower" },
-  { title: "Short Picking", area: "Picking", target: 0.08, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05, value: 0.05, unit: "%", direction: "lower" },
-  { title: "Abnormal Sorting", area: "Receiving", target: 0.20, jan: 0.14, feb: 0.10, mar: 0.15, apr: 0.13, value: 0.13, unit: "%", direction: "lower" },
-  { title: "Abnormal Shelving", area: "Packing", target: 2.00, jan: 1.27, feb: 1.23, mar: 1.61, apr: 1.72, value: 1.72, unit: "%", direction: "lower" },
-  { title: "Miss Scan", area: "Handover", target: 0.15, jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.04, value: 0.04, unit: "%", direction: "lower" },
-  { title: "Handover Failed", area: "Handover", target: 0.085, jan: 0.01, feb: 0.00, mar: 0.01, apr: 0.01, value: 0.01, unit: "%", direction: "lower" },
-  { title: "Missing Shipping", area: "Handover", target: 0.10, jan: 0.17, feb: 0.078, mar: 0.04, apr: 0.04, value: 0.04, unit: "%", direction: "lower" },
-  { title: "3D Tickets On Time Rate", area: "Tickets", target: 99.00, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91, value: 99.91, unit: "%", direction: "higher" },
-  { title: "Mis-ship Rate", area: "Shipping", target: 0.15, jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04, value: 0.04, unit: "%", direction: "lower" },
-  { title: "Miss Packing", area: "Packing", target: 0.05, jan: 0.041, feb: 0.025, mar: 0.034, apr: 0.04, value: 0.04, unit: "%", direction: "lower" },
-  { title: "Lost Rate", area: "Shipping", target: 0.05, jan: 0.086, feb: 0.052, mar: 0.032, apr: 0.011, value: 0.011, unit: "%", direction: "lower" },
-  { title: "Package Cancellation Rate", area: "Cancellation", target: 0.10, jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07, value: 0.07, unit: "%", direction: "lower" },
-  { title: "On Time Delivery Rate 15H", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 78.74, value: 78.74, unit: "%", direction: "higher" },
-  { title: "On Time Delivery Rate 1D", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 94.91, value: 94.91, unit: "%", direction: "higher" },
-  { title: "On Time Delivery Rate 2D", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 97.41, value: 97.41, unit: "%", direction: "higher" },
-  { title: "Overdue Consolidation Package", area: "Shipping", target: 0.53, jan: 0.21, feb: 0.24, mar: 0.36, apr: 0.27, value: 0.27, unit: "%", direction: "lower" },
-  { title: "3P On Time Return to Seller 2D", area: "Return", target: 95.00, jan: 41.6, feb: 46.2, mar: 49.3, apr: 40.0, value: 40.0, unit: "%", direction: "higher" },
-  { title: "Counting In Time Rate 24H", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 100, apr: 100, value: 100, unit: "%", direction: "higher" },
-  { title: "Counting Coverage Rate 1 Week", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 99.82, apr: 100, value: 100, unit: "%", direction: "higher" },
-  { title: "IRDR", area: "Inventory", target: 0.50, jan: 0.86, feb: 1.04, mar: 0.63, apr: 0.34, value: 0.34, unit: "%", direction: "lower" },
-  { title: "Não Rastreáveis", area: "Inventory", target: 0.13, jan: 0.24, feb: 0.32, mar: 0.17, apr: 0.07, value: 0.07, unit: "%", direction: "lower" },
-  { title: "Wrongly Count", area: "Inventory", target: 1.00, jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06, value: 0.06, unit: "%", direction: "lower" },
+  { title: "Capital Loss Rate", area: "Loss", target: 0.095, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001, value: 0.001, direction: "lower" },
+  { title: "Operation Difference Rate", area: "Operation", target: 0.27, jan: 0.06, feb: 0.05, mar: 0.05, apr: 0.06, value: 0.06, direction: "lower" },
+  { title: "Exception Rate", area: "Receiving", target: 0.96, jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31, value: 0.31, direction: "lower" },
+  { title: "Empty Box", area: "Receiving", target: 0.20, jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14, value: 0.14, direction: "lower" },
+  { title: "Short Picking", area: "Picking", target: 0.08, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05, value: 0.05, direction: "lower" },
+  { title: "Abnormal Sorting", area: "Receiving", target: 0.20, jan: 0.14, feb: 0.10, mar: 0.15, apr: 0.13, value: 0.13, direction: "lower" },
+  { title: "Abnormal Shelving", area: "Packing", target: 2.00, jan: 1.27, feb: 1.23, mar: 1.61, apr: 1.72, value: 1.72, direction: "lower" },
+  { title: "Miss Scan", area: "Handover", target: 0.15, jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.04, value: 0.04, direction: "lower" },
+  { title: "Handover Failed", area: "Handover", target: 0.085, jan: 0.01, feb: 0.00, mar: 0.01, apr: 0.01, value: 0.01, direction: "lower" },
+  { title: "Missing Shipping", area: "Handover", target: 0.10, jan: 0.17, feb: 0.078, mar: 0.04, apr: 0.04, value: 0.04, direction: "lower" },
+  { title: "3D Tickets On Time Rate", area: "Tickets", target: 99.00, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91, value: 99.91, direction: "higher" },
+  { title: "Mis-ship Rate", area: "Shipping", target: 0.15, jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04, value: 0.04, direction: "lower" },
+  { title: "Miss Packing", area: "Packing", target: 0.05, jan: 0.041, feb: 0.025, mar: 0.034, apr: 0.04, value: 0.04, direction: "lower" },
+  { title: "Lost Rate", area: "Shipping", target: 0.05, jan: 0.086, feb: 0.052, mar: 0.032, apr: 0.011, value: 0.011, direction: "lower" },
+  { title: "Package Cancellation Rate", area: "Cancellation", target: 0.10, jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07, value: 0.07, direction: "lower" },
+  { title: "On Time Delivery Rate 15H", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 78.74, value: 78.74, direction: "higher" },
+  { title: "On Time Delivery Rate 1D", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 94.91, value: 94.91, direction: "higher" },
+  { title: "On Time Delivery Rate 2D", area: "Delivery", target: 95.00, jan: 0, feb: 0, mar: 0, apr: 97.41, value: 97.41, direction: "higher" },
+  { title: "Overdue Consolidation Package", area: "Shipping", target: 0.53, jan: 0.21, feb: 0.24, mar: 0.36, apr: 0.27, value: 0.27, direction: "lower" },
+  { title: "3P On Time Return to Seller 2D", area: "Return", target: 95.00, jan: 41.6, feb: 46.2, mar: 49.3, apr: 40.0, value: 40.0, direction: "higher" },
+  { title: "Counting In Time Rate 24H", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 100, apr: 100, value: 100, direction: "higher" },
+  { title: "Counting Coverage Rate 1 Week", area: "Inventory", target: 100.00, jan: 100, feb: 100, mar: 99.82, apr: 100, value: 100, direction: "higher" },
+  { title: "IRDR", area: "Inventory", target: 0.50, jan: 0.86, feb: 1.04, mar: 0.63, apr: 0.34, value: 0.34, direction: "lower" },
+  { title: "Wrongly Count", area: "Inventory", target: 1.00, jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06, value: 0.06, direction: "lower" },
+];
+
+const monthlyTrend = [
+  { month: "Jan", exception: 0.64, irdr: 0.86, lost: 0.086, target: 0.50 },
+  { month: "Fev", exception: 0.41, irdr: 1.04, lost: 0.052, target: 0.50 },
+  { month: "Mar", exception: 0.47, irdr: 0.63, lost: 0.032, target: 0.50 },
+  { month: "Abr", exception: 0.31, irdr: 0.34, lost: 0.011, target: 0.50 },
+];
+
+const shiftAnalysis = [
+  { shift: "Morning", exception: 0.35, emptyBox: 0.14, irdr: 0.08, rts: 49.1 },
+  { shift: "Afternoon", exception: 0.30, emptyBox: 0.14, irdr: 0.10, rts: 24.5 },
+  { shift: "Night", exception: 0.30, emptyBox: 0.14, irdr: 0.09, rts: 36.7 },
+];
+
+const processImpact = [
+  { process: "Receiving", value: 4 },
+  { process: "Packing", value: 3 },
+  { process: "Shipping", value: 5 },
+  { process: "Inventory", value: 4 },
+  { process: "Return", value: 2 },
+  { process: "Delivery", value: 3 },
 ];
 
 const attentionByShift = [
-  {
-    kpi: "3P On Time Return to Seller 2D",
-    target: 95,
-    direction: "higher",
-    morning: 49.1,
-    afternoon: 24.5,
-    night: 36.7,
-    comment: "Principal risco operacional. Todos os turnos abaixo da meta, com maior gap no Afternoon.",
-  },
-  {
-    kpi: "On Time Delivery Rate 15H",
-    target: 95,
-    direction: "higher",
-    morning: 78.74,
-    afternoon: 78.74,
-    night: 78.74,
-    comment: "Indicador ainda em fase de estabilização, abaixo da meta de 95%.",
-  },
-  {
-    kpi: "On Time Delivery Rate 1D",
-    target: 95,
-    direction: "higher",
-    morning: 94.91,
-    afternoon: 94.91,
-    night: 94.91,
-    comment: "Muito próximo da meta. Pequena variação operacional pode virar On Track.",
-  },
+  { kpi: "3P On Time Return to Seller 2D", target: 95, direction: "higher", morning: 49.1, afternoon: 24.5, night: 36.7, comment: "Principal risco operacional. Todos os turnos abaixo da meta, com maior gap no Afternoon." },
+  { kpi: "On Time Delivery Rate 15H", target: 95, direction: "higher", morning: 78.74, afternoon: 78.74, night: 78.74, comment: "Indicador ainda em fase de estabilização, abaixo da meta de 95%." },
+  { kpi: "On Time Delivery Rate 1D", target: 95, direction: "higher", morning: 94.91, afternoon: 94.91, night: 94.91, comment: "Muito próximo da meta. Pequena variação operacional pode virar On Track." },
 ];
 
 function isOnTrack(kpi) {
@@ -85,39 +100,111 @@ export default function Dashboard() {
   const onTrack = kpis.filter((k) => getStatus(k) === "On Track").length;
   const attention = kpis.length - onTrack;
 
+  const healthData = [
+    { name: "On Track", value: onTrack },
+    { name: "Attention", value: attention },
+  ];
+
   return (
-    <main style={{ background: "#020617", minHeight: "100vh", color: "white", padding: "40px", fontFamily: "Arial" }}>
-      <header style={{ marginBottom: "32px" }}>
+    <main style={{ background: "#020617", minHeight: "100vh", color: "white", padding: "34px", fontFamily: "Arial" }}>
+      <header style={{ marginBottom: "28px" }}>
         <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>
           SHEIN WHA · EXCEPTION HANDLING & INVENTORY
         </p>
-
-        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>
-          Executive Scorecard Dashboard
-        </h1>
-
+        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>Executive Scorecard Dashboard</h1>
         <p style={{ color: "#94a3b8", fontSize: "18px" }}>
           Monthly performance view · January to April · Target vs Actual
         </p>
       </header>
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(160px, 220px))", gap: "16px", marginBottom: "36px" }}>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 180px)", gap: "14px", marginBottom: "30px" }}>
         <TopCard title="Total KPIs" value={kpis.length} color="#38bdf8" />
         <TopCard title="On Track" value={onTrack} color="#22c55e" />
         <TopCard title="Attention" value={attention} color="#f59e0b" />
       </section>
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: "18px", marginBottom: "40px" }}>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px", marginBottom: "36px" }}>
         {kpis.map((item) => (
           <KpiCard key={item.title} item={item} />
         ))}
       </section>
 
-      <section style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "24px", padding: "28px", marginBottom: "40px" }}>
-        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
-          Attention Indicators · Shift Deep Dive
-        </h2>
+      <section style={{ ...panel, marginBottom: "26px" }}>
+        <h2 style={sectionTitle}>Control Tower View</h2>
 
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px" }}>
+          <ChartBox title="Overall KPI Health">
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie data={healthData} dataKey="value" nameKey="name" innerRadius={72} outerRadius={105} paddingAngle={4}>
+                  <Cell fill="rgba(34,197,94,0.55)" />
+                  <Cell fill="rgba(245,158,11,0.55)" />
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartBox>
+
+          <ChartBox title="RTS SLA Gauge">
+            <Gauge value={40} target={95} />
+          </ChartBox>
+
+          <ChartBox title="Monthly Trend · Bars + Red Target">
+            <ResponsiveContainer width="100%" height={285}>
+              <ComposedChart data={monthlyTrend}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis dataKey="month" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip />
+                <Bar dataKey="exception" name="Exception" fill="rgba(147,197,253,0.45)" radius={[8, 8, 0, 0]}>
+                  <LabelList dataKey="exception" formatter={fmt} fill="#dbeafe" fontSize={12} />
+                </Bar>
+                <Bar dataKey="irdr" name="IRDR" fill="rgba(196,181,253,0.42)" radius={[8, 8, 0, 0]}>
+                  <LabelList dataKey="irdr" formatter={fmt} fill="#ede9fe" fontSize={12} />
+                </Bar>
+                <Line dataKey="target" name="Target" stroke="#ef4444" strokeWidth={3} dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </ChartBox>
+
+          <ChartBox title="Process Impact Index">
+            <ResponsiveContainer width="100%" height={285}>
+              <BarChart data={processImpact} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis type="number" stroke="#94a3b8" />
+                <YAxis dataKey="process" type="category" stroke="#94a3b8" width={90} />
+                <Tooltip />
+                <Bar dataKey="value" fill="rgba(129,140,248,0.45)" radius={[0, 8, 8, 0]}>
+                  <LabelList dataKey="value" position="right" fill="#c7d2fe" />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartBox>
+        </div>
+      </section>
+
+      <section style={{ ...panel, marginBottom: "26px" }}>
+        <h2 style={sectionTitle}>Shift Performance View</h2>
+
+        <ResponsiveContainer width="100%" height={320}>
+          <ComposedChart data={shiftAnalysis}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <XAxis dataKey="shift" stroke="#94a3b8" />
+            <YAxis stroke="#94a3b8" />
+            <Tooltip />
+            <Bar dataKey="exception" name="Exception" fill="rgba(147,197,253,0.45)" radius={[8, 8, 0, 0]}>
+              <LabelList dataKey="exception" formatter={fmt} fill="#dbeafe" />
+            </Bar>
+            <Bar dataKey="irdr" name="IRDR" fill="rgba(196,181,253,0.42)" radius={[8, 8, 0, 0]}>
+              <LabelList dataKey="irdr" formatter={fmt} fill="#ede9fe" />
+            </Bar>
+            <Line dataKey="emptyBox" name="Empty Box" stroke="#fca5a5" strokeWidth={2} />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </section>
+
+      <section style={{ ...panel, marginBottom: "30px" }}>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Attention Indicators · Shift Deep Dive</h2>
         <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
           Análise detalhada dos indicadores fora da meta, separados por turno.
         </p>
@@ -134,21 +221,14 @@ export default function Dashboard() {
                 <th style={th}>Main Insight</th>
               </tr>
             </thead>
-
             <tbody>
               {attentionByShift.map((row) => (
                 <tr key={row.kpi} style={{ borderTop: "1px solid #1e293b" }}>
                   <td style={td}>{row.kpi}</td>
                   <td style={td}>{fmt(row.target)}</td>
-                  <td style={td}>
-                    <ShiftPill value={row.morning} target={row.target} direction={row.direction} />
-                  </td>
-                  <td style={td}>
-                    <ShiftPill value={row.afternoon} target={row.target} direction={row.direction} />
-                  </td>
-                  <td style={td}>
-                    <ShiftPill value={row.night} target={row.target} direction={row.direction} />
-                  </td>
+                  <td style={td}><ShiftPill value={row.morning} target={row.target} direction={row.direction} /></td>
+                  <td style={td}><ShiftPill value={row.afternoon} target={row.target} direction={row.direction} /></td>
+                  <td style={td}><ShiftPill value={row.night} target={row.target} direction={row.direction} /></td>
                   <td style={{ ...td, color: "#cbd5e1" }}>{row.comment}</td>
                 </tr>
               ))}
@@ -162,9 +242,9 @@ export default function Dashboard() {
 
 function TopCard({ title, value, color }) {
   return (
-    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "18px", padding: "18px 20px", minHeight: "110px" }}>
-      <p style={{ color: "#94a3b8", fontSize: "14px", marginBottom: "8px" }}>{title}</p>
-      <h2 style={{ fontSize: "32px", color, margin: 0 }}>{value}</h2>
+    <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "16px", padding: "14px 16px", minHeight: "84px" }}>
+      <p style={{ color: "#94a3b8", fontSize: "13px", marginBottom: "6px" }}>{title}</p>
+      <h2 style={{ fontSize: "28px", color, margin: 0 }}>{value}</h2>
     </div>
   );
 }
@@ -178,23 +258,14 @@ function KpiCard({ item }) {
   return (
     <div style={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: "22px", padding: "22px" }}>
       <p style={{ color: "#94a3b8", marginBottom: "10px" }}>{item.title}</p>
-
-      <h2 style={{ fontSize: "32px", margin: "0 0 8px 0" }}>
-        {fmt(item.value)}
-      </h2>
-
-      <p style={{ color: "#64748b", marginBottom: "12px" }}>
-        Target: {fmt(item.target)}
-      </p>
-
+      <h2 style={{ fontSize: "32px", margin: "0 0 8px 0" }}>{fmt(item.value)}</h2>
+      <p style={{ color: "#64748b", marginBottom: "12px" }}>Target: {fmt(item.target)}</p>
       <span style={{ border: `1px solid ${color}`, color, padding: "6px 12px", borderRadius: "999px", fontSize: "12px", fontWeight: "bold" }}>
         {status}
       </span>
-
       <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>
         Jan → Abr: {fmt(item.jan)} → {fmt(item.apr)}
       </p>
-
       <p style={{ color: deltaGood ? "#22c55e" : "#ef4444", fontSize: "13px", marginTop: "6px" }}>
         Delta: {deltaGood ? "+" : ""}{fmt(delta)}
       </p>
@@ -202,16 +273,54 @@ function KpiCard({ item }) {
   );
 }
 
+function ChartBox({ title, children }) {
+  return (
+    <div style={{ background: "#111827", border: "1px solid #1f2937", borderRadius: "4px", padding: "18px" }}>
+      <h3 style={{ textAlign: "center", color: "#cbd5e1", fontSize: "15px", marginBottom: "12px" }}>{title}</h3>
+      {children}
+    </div>
+  );
+}
+
+function Gauge({ value, target }) {
+  const percent = Math.min(100, (value / target) * 100);
+  return (
+    <div style={{ height: "250px", position: "relative" }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <RadialBarChart innerRadius="65%" outerRadius="95%" data={[{ value: percent }]} startAngle={180} endAngle={0}>
+          <RadialBar dataKey="value" fill="rgba(252,165,165,0.75)" background />
+        </RadialBarChart>
+      </ResponsiveContainer>
+      <div style={{ position: "absolute", top: "48%", left: "50%", transform: "translate(-50%, -50%)", textAlign: "center" }}>
+        <h2 style={{ fontSize: "34px", margin: 0 }}>{fmt(value)}</h2>
+        <p style={{ color: "#94a3b8", marginTop: "6px" }}>Target: {fmt(target)}</p>
+      </div>
+    </div>
+  );
+}
+
 function ShiftPill({ value, target, direction }) {
   const ok = direction === "lower" ? value <= target : value >= target;
   const color = ok ? "#22c55e" : "#f59e0b";
-
   return (
     <span style={{ display: "inline-block", minWidth: "86px", textAlign: "center", border: `1px solid ${color}`, color, borderRadius: "999px", padding: "7px 10px", fontWeight: "bold", fontSize: "12px" }}>
       {fmt(value)}
     </span>
   );
 }
+
+const panel = {
+  background: "#0f172a",
+  border: "1px solid #1e293b",
+  borderRadius: "8px",
+  padding: "22px",
+};
+
+const sectionTitle = {
+  fontSize: "24px",
+  marginBottom: "18px",
+  color: "#e5e7eb",
+};
 
 const th = {
   padding: "14px",
