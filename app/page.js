@@ -15,35 +15,35 @@ import {
 } from "recharts";
 
 const baseKpis = [
-  { title: "Capital Loss Rate", cluster: "LOST", area: "Loss", target: 0.095, direction: "lower", shifts: { Total: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Morning: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Afternoon: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Night: { jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 } } },
+  { title: "Capital Loss Rate", cluster: "LOST", area: "Loss", target: 0.095, direction: "lower", shifts: { Total: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Morning: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Afternoon: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Night: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 } } },
 
-  { title: "Exception Rate", cluster: "EXCEPTION", area: "Receiving", target: 0.96, direction: "lower", shifts: { Total: { jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31 }, Morning: { jan: 0.61, feb: 0.44, mar: 0.67, apr: 0.35 }, Afternoon: { jan: 0.67, feb: 0.38, mar: 0.37, apr: 0.30 }, Night: { jan: 0.63, feb: 0.40, mar: 0.44, apr: 0.30 } } },
-  { title: "Empty Box", cluster: "EXCEPTION", area: "Receiving", target: 0.20, direction: "lower", shifts: { Total: { jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14 }, Morning: { jan: 0.41, feb: 0.28, mar: 0.39, apr: 0.14 }, Afternoon: { jan: 0.47, feb: 0.28, mar: 0.21, apr: 0.14 }, Night: { jan: 0.45, feb: 0.25, mar: 0.23, apr: 0.14 } } },
-  { title: "Short Picking", cluster: "EXCEPTION", area: "Picking", target: 0.08, direction: "lower", shifts: { Total: { jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Morning: { jan: 0.06, feb: 0.03, mar: 0.07, apr: 0.05 }, Afternoon: { jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Night: { jan: 0.04, feb: 0.04, mar: 0.04, apr: 0.04 } } },
-  { title: "Abnormal Sorting", cluster: "EXCEPTION", area: "Receiving", target: 0.20, direction: "lower", shifts: { Total: { jan: 0.14, feb: 0.10, mar: 0.15, apr: 0.13 }, Morning: { jan: 0.14, feb: 0.13, mar: 0.21, apr: 0.16 }, Afternoon: { jan: 0.15, feb: 0.07, mar: 0.11, apr: 0.10 }, Night: { jan: 0.14, feb: 0.11, mar: 0.16, apr: 0.12 } } },
-  { title: "Abnormal Shelving", cluster: "EXCEPTION", area: "Packing", target: 2.00, direction: "lower", shifts: { Total: { jan: 1.27, feb: 1.23, mar: 1.61, apr: 1.72 }, Morning: { jan: 1.48, feb: 1.24, mar: 1.95, apr: 2.07 }, Afternoon: { jan: 1.47, feb: 1.29, mar: 1.73, apr: 1.92 }, Night: { jan: 0.90, feb: 1.15, mar: 1.16, apr: 1.16 } } },
-  { title: "Miss Packing", cluster: "EXCEPTION", area: "Packing", target: 0.05, direction: "lower", shifts: { Total: { jan: 0.041, feb: 0.025, mar: 0.034, apr: 0.04 }, Morning: { jan: 0.05, feb: 0.03, mar: 0.04, apr: 0.03 }, Afternoon: { jan: 0.04, feb: 0.03, mar: 0.04, apr: 0.04 }, Night: { jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.03 } } },
+  { title: "Exception Rate", cluster: "EXCEPTION", area: "Receiving", target: 0.96, direction: "lower", shifts: { Total: { overall: 0.45, jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31 }, Morning: { overall: 0.51, jan: 0.61, feb: 0.44, mar: 0.67, apr: 0.35 }, Afternoon: { overall: 0.41, jan: 0.67, feb: 0.38, mar: 0.37, apr: 0.30 }, Night: { overall: 0.43, jan: 0.63, feb: 0.40, mar: 0.44, apr: 0.30 } } },
+  { title: "Empty Box", cluster: "EXCEPTION", area: "Receiving", target: 0.20, direction: "lower", shifts: { Total: { overall: 0.27, jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14 }, Morning: { overall: 0.29, jan: 0.41, feb: 0.28, mar: 0.39, apr: 0.14 }, Afternoon: { overall: 0.27, jan: 0.47, feb: 0.28, mar: 0.21, apr: 0.14 }, Night: { overall: 0.26, jan: 0.45, feb: 0.25, mar: 0.23, apr: 0.14 } } },
+  { title: "Short Picking", cluster: "EXCEPTION", area: "Picking", target: 0.08, direction: "lower", shifts: { Total: { overall: 0.05, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Morning: { overall: 0.05, jan: 0.06, feb: 0.03, mar: 0.07, apr: 0.05 }, Afternoon: { overall: 0.04, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Night: { overall: 0.04, jan: 0.04, feb: 0.04, mar: 0.04, apr: 0.04 } } },
+  { title: "Abnormal Sorting", cluster: "EXCEPTION", area: "Receiving", target: 0.20, direction: "lower", shifts: { Total: { overall: 0.13, jan: 0.14, feb: 0.10, mar: 0.15, apr: 0.13 }, Morning: { overall: 0.15, jan: 0.14, feb: 0.13, mar: 0.21, apr: 0.16 }, Afternoon: { overall: 0.10, jan: 0.15, feb: 0.07, mar: 0.11, apr: 0.10 }, Night: { overall: 0.13, jan: 0.14, feb: 0.11, mar: 0.16, apr: 0.12 } } },
+  { title: "Abnormal Shelving", cluster: "EXCEPTION", area: "Packing", target: 2.00, direction: "lower", shifts: { Total: { overall: 1.46, jan: 1.27, feb: 1.23, mar: 1.61, apr: 1.72 }, Morning: { overall: 1.68, jan: 1.48, feb: 1.24, mar: 1.95, apr: 2.07 }, Afternoon: { overall: 1.60, jan: 1.47, feb: 1.29, mar: 1.73, apr: 1.92 }, Night: { overall: 1.10, jan: 0.90, feb: 1.15, mar: 1.16, apr: 1.16 } } },
+  { title: "Miss Packing", cluster: "EXCEPTION", area: "Packing", target: 0.05, direction: "lower", shifts: { Total: { overall: 0.03, jan: 0.041, feb: 0.025, mar: 0.034, apr: 0.04 }, Morning: { overall: 0.04, jan: 0.05, feb: 0.03, mar: 0.04, apr: 0.03 }, Afternoon: { overall: 0.04, jan: 0.04, feb: 0.03, mar: 0.04, apr: 0.04 }, Night: { overall: 0.03, jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.03 } } },
 
-  { title: "Miss Scan", cluster: "HANDOVER", area: "Handover", target: 0.15, direction: "lower", shifts: { Total: { jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.04 }, Morning: { jan: 0.09, feb: 0.01, mar: 0.03, apr: 0.03 }, Afternoon: { jan: 0.02, feb: 0.01, mar: 0.03, apr: 0.03 }, Night: { jan: 0.03, feb: 0.03, mar: 0.04, apr: 0.05 } } },
-  { title: "Handover Failed", cluster: "HANDOVER", area: "Handover", target: 0.085, direction: "lower", shifts: { Total: { jan: 0.01, feb: 0.00, mar: 0.01, apr: 0.01 }, Morning: { jan: 0.01, feb: 0.00, mar: 0.00, apr: 0.01 }, Afternoon: { jan: 0.01, feb: 0.01, mar: 0.01, apr: 0.02 }, Night: { jan: 0.01, feb: 0.00, mar: 0.00, apr: 0.01 } } },
-  { title: "Missing Shipping", cluster: "HANDOVER", area: "Handover", target: 0.10, direction: "lower", shifts: { Total: { jan: 0.17, feb: 0.078, mar: 0.04, apr: 0.04 }, Morning: { jan: 0.04, feb: 0.06, mar: 0.05, apr: 0.03 }, Afternoon: { jan: 0.32, feb: 0.09, mar: 0.02, apr: 0.02 }, Night: { jan: 0.16, feb: 0.08, mar: 0.05, apr: 0.06 } } },
+  { title: "Miss Scan", cluster: "HANDOVER", area: "Handover", target: 0.15, direction: "lower", shifts: { Total: { overall: 0.03, jan: 0.04, feb: 0.02, mar: 0.03, apr: 0.04 }, Morning: { overall: 0.04, jan: 0.09, feb: 0.01, mar: 0.03, apr: 0.03 }, Afternoon: { overall: 0.02, jan: 0.02, feb: 0.01, mar: 0.03, apr: 0.03 }, Night: { overall: 0.04, jan: 0.03, feb: 0.03, mar: 0.04, apr: 0.05 } } },
+  { title: "Handover Failed", cluster: "HANDOVER", area: "Handover", target: 0.085, direction: "lower", shifts: { Total: { overall: 0.01, jan: 0.01, feb: 0.00, mar: 0.01, apr: 0.01 }, Morning: { overall: 0.01, jan: 0.01, feb: 0.00, mar: 0.00, apr: 0.01 }, Afternoon: { overall: 0.01, jan: 0.01, feb: 0.01, mar: 0.01, apr: 0.02 }, Night: { overall: 0.01, jan: 0.01, feb: 0.00, mar: 0.00, apr: 0.01 } } },
+  { title: "Missing Shipping", cluster: "HANDOVER", area: "Handover", target: 0.10, direction: "lower", shifts: { Total: { overall: 0.09, jan: 0.17, feb: 0.078, mar: 0.04, apr: 0.04 }, Morning: { overall: 0.05, jan: 0.04, feb: 0.06, mar: 0.05, apr: 0.03 }, Afternoon: { overall: 0.12, jan: 0.32, feb: 0.09, mar: 0.02, apr: 0.02 }, Night: { overall: 0.09, jan: 0.16, feb: 0.08, mar: 0.05, apr: 0.06 } } },
 
-  { title: "On Time Delivery Rate 15H", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { jan: 0, feb: 0, mar: 0, apr: 78.74 }, Morning: { jan: 0, feb: 0, mar: 0, apr: 78.74 }, Afternoon: { jan: 0, feb: 0, mar: 0, apr: 78.74 }, Night: { jan: 0, feb: 0, mar: 0, apr: 78.74 } } },
-  { title: "On Time Delivery Rate 1D", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { jan: 0, feb: 0, mar: 0, apr: 94.91 }, Morning: { jan: 0, feb: 0, mar: 0, apr: 94.91 }, Afternoon: { jan: 0, feb: 0, mar: 0, apr: 94.91 }, Night: { jan: 0, feb: 0, mar: 0, apr: 94.91 } } },
-  { title: "On Time Delivery Rate 2D", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { jan: 0, feb: 0, mar: 0, apr: 97.41 }, Morning: { jan: 0, feb: 0, mar: 0, apr: 97.41 }, Afternoon: { jan: 0, feb: 0, mar: 0, apr: 97.41 }, Night: { jan: 0, feb: 0, mar: 0, apr: 97.41 } } },
+  { title: "On Time Delivery Rate 15H", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { overall: 78.69, jan: 0, feb: 0, mar: 0, apr: 78.74 }, Morning: { overall: 78.69, jan: 0, feb: 0, mar: 0, apr: 78.74 }, Afternoon: { overall: 78.69, jan: 0, feb: 0, mar: 0, apr: 78.74 }, Night: { overall: 78.69, jan: 0, feb: 0, mar: 0, apr: 78.74 } } },
+  { title: "On Time Delivery Rate 1D", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { overall: 94.89, jan: 0, feb: 0, mar: 0, apr: 94.91 }, Morning: { overall: 94.89, jan: 0, feb: 0, mar: 0, apr: 94.91 }, Afternoon: { overall: 94.89, jan: 0, feb: 0, mar: 0, apr: 94.91 }, Night: { overall: 94.89, jan: 0, feb: 0, mar: 0, apr: 94.91 } } },
+  { title: "On Time Delivery Rate 2D", cluster: "SLA", area: "SLA", target: 95.00, direction: "higher", shifts: { Total: { overall: 97.40, jan: 0, feb: 0, mar: 0, apr: 97.41 }, Morning: { overall: 97.40, jan: 0, feb: 0, mar: 0, apr: 97.41 }, Afternoon: { overall: 97.40, jan: 0, feb: 0, mar: 0, apr: 97.41 }, Night: { overall: 97.40, jan: 0, feb: 0, mar: 0, apr: 97.41 } } },
 
-  { title: "Overdue Consolidation Package", cluster: "LOST", area: "Shipping", target: 0.53, direction: "lower", shifts: { Total: { jan: 0.21, feb: 0.24, mar: 0.36, apr: 0.27 }, Morning: { jan: 0.23, feb: 0.27, mar: 0.46, apr: 0.26 }, Afternoon: { jan: 0.22, feb: 0.20, mar: 0.24, apr: 0.22 }, Night: { jan: 0.22, feb: 0.24, mar: 0.40, apr: 0.32 } } },
-  { title: "Package Cancellation Rate", cluster: "LOST", area: "Cancellation", target: 0.10, direction: "lower", shifts: { Total: { jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07 }, Morning: { jan: 0.09, feb: 0.09, mar: 0.10, apr: 0.07 }, Afternoon: { jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07 }, Night: { jan: 0.09, feb: 0.10, mar: 0.09, apr: 0.07 } } },
-  { title: "3P On Time Return to Seller 2D", cluster: "LOST", area: "Return", target: 95.00, direction: "higher", shifts: { Total: { jan: 41.6, feb: 46.2, mar: 49.3, apr: 40.0 }, Morning: { jan: 42.7, feb: 48.8, mar: 51.9, apr: 49.1 }, Afternoon: { jan: 45.7, feb: 34.1, mar: 36.1, apr: 24.5 }, Night: { jan: 19.9, feb: 49.0, mar: 60.1, apr: 36.7 } } },
-  { title: "Lost Rate", cluster: "LOST", area: "Shipping", target: 0.05, direction: "lower", shifts: { Total: { jan: 0.086, feb: 0.052, mar: 0.032, apr: 0.011 }, Morning: { jan: 0.087, feb: 0.059, mar: 0.036, apr: 0.011 }, Afternoon: { jan: 0.110, feb: 0.047, mar: 0.030, apr: 0.013 }, Night: { jan: 0.077, feb: 0.050, mar: 0.030, apr: 0.009 } } },
+  { title: "Overdue Consolidation Package", cluster: "LOST", area: "Shipping", target: 0.53, direction: "lower", shifts: { Total: { overall: 0.28, jan: 0.21, feb: 0.24, mar: 0.36, apr: 0.27 }, Morning: { overall: 0.30, jan: 0.23, feb: 0.27, mar: 0.46, apr: 0.26 }, Afternoon: { overall: 0.25, jan: 0.22, feb: 0.20, mar: 0.24, apr: 0.22 }, Night: { overall: 0.29, jan: 0.22, feb: 0.24, mar: 0.40, apr: 0.32 } } },
+  { title: "Package Cancellation Rate", cluster: "LOST", area: "Cancellation", target: 0.10, direction: "lower", shifts: { Total: { overall: 0.09, jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07 }, Morning: { overall: 0.09, jan: 0.09, feb: 0.09, mar: 0.10, apr: 0.07 }, Afternoon: { overall: 0.08, jan: 0.10, feb: 0.09, mar: 0.09, apr: 0.07 }, Night: { overall: 0.09, jan: 0.09, feb: 0.10, mar: 0.09, apr: 0.07 } } },
+  { title: "3P On Time Return to Seller 2D", cluster: "LOST", area: "Return", target: 95.00, direction: "higher", shifts: { Total: { overall: 44.16, jan: 41.6, feb: 46.2, mar: 49.3, apr: 40.0 }, Morning: { overall: 47.57, jan: 42.7, feb: 48.8, mar: 51.9, apr: 49.1 }, Afternoon: { overall: 37.79, jan: 45.7, feb: 34.1, mar: 36.1, apr: 24.5 }, Night: { overall: 42.10, jan: 19.9, feb: 49.0, mar: 60.1, apr: 36.7 } } },
+  { title: "Lost Rate", cluster: "LOST", area: "Shipping", target: 0.05, direction: "lower", shifts: { Total: { overall: 0.04, jan: 0.086, feb: 0.052, mar: 0.032, apr: 0.011 }, Morning: { overall: 0.05, jan: 0.087, feb: 0.059, mar: 0.036, apr: 0.011 }, Afternoon: { overall: 0.05, jan: 0.110, feb: 0.047, mar: 0.030, apr: 0.013 }, Night: { overall: 0.04, jan: 0.077, feb: 0.050, mar: 0.030, apr: 0.009 } } },
 
-  { title: "IRDR", cluster: "INVENTORY", area: "Inventory", target: 0.50, direction: "lower", shifts: { Total: { jan: 0.86, feb: 1.04, mar: 0.63, apr: 0.34 }, Morning: { jan: 0.16, feb: 0.19, mar: 0.14, apr: 0.08 }, Afternoon: { jan: 0.20, feb: 0.24, mar: 0.16, apr: 0.10 }, Night: { jan: 0.25, feb: 0.29, mar: 0.16, apr: 0.09 } } },
-  { title: "Counting Coverage Rate 1 Week", cluster: "INVENTORY", area: "Inventory", target: 100.00, direction: "higher", shifts: { Total: { jan: 100, feb: 100, mar: 99.82, apr: 100 }, Morning: { jan: 44.25, feb: 39.80, mar: 42.18, apr: 47.01 }, Afternoon: { jan: 28.21, feb: 27.21, mar: 33.08, apr: 35.02 }, Night: { jan: 27.54, feb: 32.99, mar: 24.74, apr: 17.71 } } },
-  { title: "Wrongly Count", cluster: "INVENTORY", area: "Inventory", target: 1.00, direction: "lower", shifts: { Total: { jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06 }, Morning: { jan: 0.11, feb: 0.19, mar: 0.07, apr: 0.04 }, Afternoon: { jan: 0.18, feb: 0.29, mar: 0.23, apr: 0.10 }, Night: { jan: 0.02, feb: 0.01, mar: 0.02, apr: 0.02 } } },
-  { title: "Counting In Time Rate 24H", cluster: "INVENTORY", area: "Inventory", target: 100.00, direction: "higher", shifts: { Total: { jan: 100, feb: 100, mar: 100, apr: 100 }, Morning: { jan: 100, feb: 100, mar: 100, apr: 100 }, Afternoon: { jan: 100, feb: 100, mar: 100, apr: 100 }, Night: { jan: 100, feb: 100, mar: 100, apr: 100 } } },
+  { title: "IRDR", cluster: "INVENTORY", area: "Inventory", target: 0.50, direction: "lower", shifts: { Total: { overall: 0.69, jan: 0.86, feb: 1.04, mar: 0.63, apr: 0.34 }, Morning: { overall: 0.13, jan: 0.16, feb: 0.19, mar: 0.14, apr: 0.08 }, Afternoon: { overall: 0.19, jan: 0.20, feb: 0.24, mar: 0.16, apr: 0.10 }, Night: { overall: 0.01, jan: 0.25, feb: 0.29, mar: 0.16, apr: 0.09 } } },
+  { title: "Counting Coverage Rate 1 Week", cluster: "INVENTORY", area: "Inventory", target: 100.00, direction: "higher", shifts: { Total: { overall: 100, jan: 100, feb: 100, mar: 99.82, apr: 100 }, Morning: { overall: 47.01, jan: 44.25, feb: 39.80, mar: 42.18, apr: 47.01 }, Afternoon: { overall: 35.02, jan: 28.21, feb: 27.21, mar: 33.08, apr: 35.02 }, Night: { overall: 17.71, jan: 27.54, feb: 32.99, mar: 24.74, apr: 17.71 } } },
+  { title: "Wrongly Count", cluster: "INVENTORY", area: "Inventory", target: 1.00, direction: "lower", shifts: { Total: { overall: 0.11, jan: 0.10, feb: 0.16, mar: 0.11, apr: 0.06 }, Morning: { overall: 0.10, jan: 0.11, feb: 0.19, mar: 0.07, apr: 0.04 }, Afternoon: { overall: 0.19, jan: 0.18, feb: 0.29, mar: 0.23, apr: 0.10 }, Night: { overall: 0.01, jan: 0.02, feb: 0.01, mar: 0.02, apr: 0.02 } } },
+  { title: "Counting In Time Rate 24H", cluster: "INVENTORY", area: "Inventory", target: 100.00, direction: "higher", shifts: { Total: { overall: 100, jan: 100, feb: 100, mar: 100, apr: 100 }, Morning: { overall: 100, jan: 100, feb: 100, mar: 100, apr: 100 }, Afternoon: { overall: 100, jan: 100, feb: 100, mar: 100, apr: 100 }, Night: { overall: 100, jan: 100, feb: 100, mar: 100, apr: 100 } } },
 
-  { title: "3D Tickets On Time Rate", cluster: "TICKET", area: "Tickets", target: 99.00, direction: "higher", shifts: { Total: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Morning: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Afternoon: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Night: { jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 } } },
-  { title: "Mis-ship Rate", cluster: "TICKET", area: "Shipping", target: 0.15, direction: "lower", shifts: { Total: { jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04 }, Morning: { jan: 0.12, feb: 0.04, mar: 0.08, apr: 0.05 }, Afternoon: { jan: 0.14, feb: 0.04, mar: 0.07, apr: 0.04 }, Night: { jan: 0.09, feb: 0.05, mar: 0.06, apr: 0.04 } } },
+  { title: "3D Tickets On Time Rate", cluster: "TICKET", area: "Tickets", target: 99.00, direction: "higher", shifts: { Total: { overall: 99.83, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Morning: { overall: 99.83, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Afternoon: { overall: 99.83, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 }, Night: { overall: 99.83, jan: 99.71, feb: 99.94, mar: 99.84, apr: 99.91 } } },
+  { title: "Mis-ship Rate", cluster: "TICKET", area: "Shipping", target: 0.15, direction: "lower", shifts: { Total: { overall: 0.07, jan: 0.11, feb: 0.05, mar: 0.07, apr: 0.04 }, Morning: { overall: 0.05, jan: 0.12, feb: 0.04, mar: 0.08, apr: 0.05 }, Afternoon: { overall: 0.05, jan: 0.14, feb: 0.04, mar: 0.07, apr: 0.04 }, Night: { overall: 0.05, jan: 0.09, feb: 0.05, mar: 0.06, apr: 0.04 } } },
 ];
 
 const productivityRows = [
@@ -70,6 +70,7 @@ const productivityRows = [
 const clusters = ["EXCEPTION", "HANDOVER", "SLA", "LOST", "INVENTORY", "TICKET"];
 const shifts = ["Total", "Morning", "Afternoon", "Night"];
 const months = [
+  { key: "overall", label: "Overall" },
   { key: "jan", label: "Jan" },
   { key: "feb", label: "Fev" },
   { key: "mar", label: "Mar" },
@@ -77,6 +78,7 @@ const months = [
 ];
 
 function getEffectiveMonth(kpi, selectedMonth) {
+  if (selectedMonth === "overall") return "overall";
   return kpi.cluster === "LOST" ? "mar" : selectedMonth;
 }
 
@@ -137,12 +139,60 @@ function deltaValue(item) {
   return item.direction === "lower" ? item.jan - item.value : item.value - item.jan;
 }
 
+const dictionary = {
+  en: {
+    scorecard: "Scorecard",
+    productivity: "Cycle Productivity",
+    totalKpis: "Total KPIs",
+    onTrack: "On Track",
+    attention: "Attention",
+    dashboardTitle: "Executive Scorecard Dashboard",
+    dashboardSubtitle: "Monthly performance view · Target vs Actual",
+    productivityTitle: "Cycle Productivity",
+    productivitySubtitle: "Productivity ranking by checker · Total counted locations",
+    totalLocations: "Total Locations Counted",
+    totalCheckers: "Total Checkers",
+    bestShift: "Best Shift",
+    topChecker: "Top Checker",
+    inventoryIntro: "Inventory KPIs explaining cycle productivity.",
+    attentionDeepDive: "Attention Indicators",
+    mainInsight: "Main Insight",
+    actionPlan: "Return to Seller Action Plan",
+    predictive: "Predictive Warehouse Insights",
+    language: "Language",
+  },
+  pt: {
+    scorecard: "Scorecard",
+    productivity: "Produtividade Ciclo",
+    totalKpis: "Total KPIs",
+    onTrack: "On Track",
+    attention: "Attention",
+    dashboardTitle: "Dashboard Executivo de Indicadores",
+    dashboardSubtitle: "Visão mensal · Meta vs Real",
+    productivityTitle: "Produtividade Ciclo",
+    productivitySubtitle: "Ranking de produtividade por checker · Soma total de posições contadas",
+    totalLocations: "Total de Posições Contadas",
+    totalCheckers: "Total de Checkers",
+    bestShift: "Melhor Turno",
+    topChecker: "Top Checker",
+    inventoryIntro: "Indicadores de inventário que explicam a produtividade do ciclo.",
+    attentionDeepDive: "Indicadores em Atenção",
+    mainInsight: "Insight Principal",
+    actionPlan: "Plano de Ação Return to Seller",
+    predictive: "Insights Preditivos de Warehouse",
+    language: "Idioma",
+  },
+};
+
 export default function Dashboard() {
   const [activePage, setActivePage] = useState("scorecard");
   const [selectedShift, setSelectedShift] = useState("Total");
-  const [selectedMonth, setSelectedMonth] = useState("apr");
+  const [selectedMonth, setSelectedMonth] = useState("overall");
   const [selectedKpiTitle, setSelectedKpiTitle] = useState(null);
   const [chartShift, setChartShift] = useState("Total");
+  const [lang, setLang] = useState("en");
+
+  const t = dictionary[lang];
 
   const kpis = buildKpisByShift(selectedShift, selectedMonth);
   const selectedKpi = selectedKpiTitle ? buildSingleKpi(selectedKpiTitle, chartShift) : null;
@@ -151,8 +201,23 @@ export default function Dashboard() {
     <div style={{ display: "flex", minHeight: "100vh", background: "#020617", color: "white", fontFamily: "Arial" }}>
       <aside style={sidebar}>
         <h2 style={{ fontSize: "18px", marginBottom: "26px", color: "#fb923c" }}>EH & Inventory</h2>
-        <SideButton active={activePage === "scorecard"} onClick={() => setActivePage("scorecard")}>Scorecard</SideButton>
-        <SideButton active={activePage === "productivity"} onClick={() => setActivePage("productivity")}>Produtividade Ciclo</SideButton>
+
+        <SideButton active={activePage === "scorecard"} onClick={() => setActivePage("scorecard")}>
+          {t.scorecard}
+        </SideButton>
+
+        <SideButton active={activePage === "productivity"} onClick={() => setActivePage("productivity")}>
+          {t.productivity}
+        </SideButton>
+
+        <div style={{ marginTop: "28px" }}>
+          <p style={{ color: "#94a3b8", fontSize: "12px", marginBottom: "10px" }}>{t.language}</p>
+
+          <div style={{ display: "flex", gap: "8px" }}>
+            <Button active={lang === "pt"} onClick={() => setLang("pt")} color="#38bdf8">PT</Button>
+            <Button active={lang === "en"} onClick={() => setLang("en")} color="#38bdf8">EN</Button>
+          </div>
+        </div>
       </aside>
 
       <main style={{ flex: 1, padding: "34px" }}>
@@ -165,9 +230,16 @@ export default function Dashboard() {
             setSelectedMonth={setSelectedMonth}
             setSelectedKpiTitle={setSelectedKpiTitle}
             setChartShift={setChartShift}
+            t={t}
           />
         ) : (
-          <ProductivityPage />
+          <ProductivityPage
+            selectedShift={selectedShift}
+            setSelectedShift={setSelectedShift}
+            selectedMonth={selectedMonth}
+            setSelectedMonth={setSelectedMonth}
+            t={t}
+          />
         )}
 
         {selectedKpi && (
@@ -183,7 +255,31 @@ export default function Dashboard() {
   );
 }
 
-function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, setSelectedMonth, setSelectedKpiTitle, setChartShift }) {
+function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelectedMonth }) {
+  return (
+    <section style={{ display: "flex", gap: "22px", alignItems: "center", flexWrap: "wrap", marginBottom: "28px" }}>
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        {shifts.map((shift) => (
+          <Button key={shift} active={selectedShift === shift} onClick={() => setSelectedShift(shift)}>
+            {shift}
+          </Button>
+        ))}
+      </div>
+
+      <div style={{ width: "1px", height: "30px", background: "#334155" }} />
+
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        {months.map((month) => (
+          <Button key={month.key} active={selectedMonth === month.key} onClick={() => setSelectedMonth(month.key)} color="#38bdf8">
+            {month.label}
+          </Button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, setSelectedMonth, setSelectedKpiTitle, setChartShift, t }) {
   const onTrack = kpis.filter((k) => getStatus(k) === "On Track").length;
   const attention = kpis.length - onTrack;
 
@@ -202,24 +298,23 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
     <>
       <header style={{ marginBottom: "28px" }}>
         <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · EXCEPTION HANDLING & INVENTORY</p>
-        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>Executive Scorecard Dashboard</h1>
+        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>{t.dashboardTitle}</h1>
         <p style={{ color: "#94a3b8", fontSize: "18px" }}>
-          Monthly performance view · Target vs Actual · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
+          {t.dashboardSubtitle} · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
         </p>
       </header>
 
-      <section style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
-        {shifts.map((shift) => <Button key={shift} active={selectedShift === shift} onClick={() => setSelectedShift(shift)}>{shift}</Button>)}
-      </section>
-
-      <section style={{ display: "flex", gap: "10px", marginBottom: "24px", flexWrap: "wrap" }}>
-        {months.map((month) => <Button key={month.key} active={selectedMonth === month.key} onClick={() => setSelectedMonth(month.key)} color="#38bdf8">{month.label}</Button>)}
-      </section>
+      <FilterBar
+        selectedShift={selectedShift}
+        setSelectedShift={setSelectedShift}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
+      />
 
       <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 180px)", gap: "14px", marginBottom: "30px" }}>
-        <TopCard title="Total KPIs" value={kpis.length} color="#38bdf8" />
-        <TopCard title="On Track" value={onTrack} color="#22c55e" />
-        <TopCard title="Attention" value={attention} color="#f59e0b" />
+        <TopCard title={t.totalKpis} value={kpis.length} color="#38bdf8" />
+        <TopCard title={t.onTrack} value={onTrack} color="#22c55e" />
+        <TopCard title={t.attention} value={attention} color="#f59e0b" />
       </section>
 
       {clusters.map((cluster) => {
@@ -231,7 +326,7 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
             <h2 style={clusterTitle}>{cluster}</h2>
             <p style={clusterSubtitle}>
               {clusterKpis.length} indicators · {clusterAttention} attention · {selectedShift}
-              {cluster === "LOST" ? " · Result based on Mar (M-2)" : ""}
+              {cluster === "LOST" && selectedMonth !== "overall" ? " · Result based on Mar (M-2)" : ""}
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px", marginTop: "20px" }}>
@@ -251,12 +346,12 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
       })}
 
       <section style={{ ...panel, marginBottom: "30px" }}>
-        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Attention Indicators · {selectedShift} Deep Dive</h2>
+        <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.attentionDeepDive} · {selectedShift}</h2>
         <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-          Indicadores fora da meta na visão selecionada. Para o cluster LOST, o resultado considera sempre M-2.
+          Indicadores fora da meta na visão selecionada.
         </p>
 
-        <Table headers={["KPI", "Target", "Jan", "Period Used", "Current", "Main Insight"]}>
+        <Table headers={["KPI", "Target", "Jan", "Period Used", "Current", t.mainInsight]}>
           {attentionByShift.map((row) => (
             <tr key={row.kpi} style={{ borderTop: "1px solid #1e293b" }}>
               <td style={td}>{row.kpi}</td>
@@ -272,18 +367,22 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
         </Table>
       </section>
 
-      <ActionPlanSection />
-      <PredictiveInsights />
+      <ActionPlanSection t={t} />
+      <PredictiveInsights t={t} />
     </>
   );
 }
 
-function ProductivityPage() {
-  const inventoryKpis = buildKpisByShift("Total", "apr").filter((kpi) => kpi.cluster === "INVENTORY");
+function ProductivityPage({ selectedShift, setSelectedShift, selectedMonth, setSelectedMonth, t }) {
+  const inventoryKpis = buildKpisByShift("Total", selectedMonth).filter((kpi) => kpi.cluster === "INVENTORY");
 
-  const totalLocations = productivityRows.reduce((sum, row) => sum + row.total, 0);
-  const totalCheckers = productivityRows.length;
-  const topChecker = [...productivityRows].sort((a, b) => b.total - a.total)[0];
+  const filteredRows = selectedShift === "Total"
+    ? productivityRows
+    : productivityRows.filter((row) => row.shift === selectedShift);
+
+  const totalLocations = filteredRows.reduce((sum, row) => sum + row.total, 0);
+  const totalCheckers = filteredRows.length;
+  const topChecker = [...filteredRows].sort((a, b) => b.total - a.total)[0];
 
   const shiftTotals = ["Morning", "Afternoon", "Night"].map((shift) => ({
     shift,
@@ -296,22 +395,29 @@ function ProductivityPage() {
     <>
       <header style={{ marginBottom: "28px" }}>
         <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · INVENTORY PRODUCTIVITY</p>
-        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>Produtividade Ciclo</h1>
+        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>{t.productivityTitle}</h1>
         <p style={{ color: "#94a3b8", fontSize: "18px" }}>
-          Ranking de produtividade por checker · Soma total de posições contadas
+          {t.productivitySubtitle} · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
         </p>
       </header>
 
+      <FilterBar
+        selectedShift={selectedShift}
+        setSelectedShift={setSelectedShift}
+        selectedMonth={selectedMonth}
+        setSelectedMonth={setSelectedMonth}
+      />
+
       <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "14px", marginBottom: "30px" }}>
-        <TopCard title="Total Locations Counted" value={fmtNumber(totalLocations)} color="#38bdf8" />
-        <TopCard title="Total Checkers" value={totalCheckers} color="#22c55e" />
-        <TopCard title="Best Shift" value={bestShift.shift} color="#f59e0b" />
-        <TopCard title="Top Checker" value={topChecker.checker} color="#fb923c" />
+        <TopCard title={t.totalLocations} value={fmtNumber(totalLocations)} color="#38bdf8" />
+        <TopCard title={t.totalCheckers} value={totalCheckers} color="#22c55e" />
+        <TopCard title={t.bestShift} value={bestShift.shift} color="#f59e0b" />
+        <TopCard title={t.topChecker} value={topChecker?.checker || "-"} color="#fb923c" />
       </section>
 
       <section style={clusterSection}>
         <h2 style={clusterTitle}>INVENTORY KPI INTRODUCTION</h2>
-        <p style={clusterSubtitle}>Indicadores de inventário que explicam a produtividade do ciclo.</p>
+        <p style={clusterSubtitle}>{t.inventoryIntro}</p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(235px,1fr))", gap: "18px", marginTop: "20px" }}>
           {inventoryKpis.map((item) => <KpiCard key={item.title} item={item} />)}
@@ -334,29 +440,21 @@ function ProductivityPage() {
         </ResponsiveContainer>
       </section>
 
-      {["Morning", "Afternoon", "Night"].map((shift) => {
-        const rows = productivityRows
-          .filter((row) => row.shift === shift)
-          .sort((a, b) => b.total - a.total);
+      <section style={{ ...panel, marginBottom: "30px" }}>
+        <h2 style={{ fontSize: "28px", marginBottom: "18px" }}>Top Checkers · {selectedShift}</h2>
 
-        return (
-          <section key={shift} style={{ ...panel, marginBottom: "30px" }}>
-            <h2 style={{ fontSize: "28px", marginBottom: "18px" }}>Top Checkers · {shift}</h2>
-
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={rows} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis type="number" stroke="#94a3b8" />
-                <YAxis dataKey="checker" type="category" stroke="#94a3b8" width={150} />
-                <Tooltip />
-                <Bar dataKey="total" fill="rgba(251,146,60,0.55)" radius={[0, 8, 8, 0]}>
-                  <LabelList dataKey="total" position="right" fill="#e5e7eb" formatter={fmtNumber} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </section>
-        );
-      })}
+        <ResponsiveContainer width="100%" height={360}>
+          <BarChart data={[...filteredRows].sort((a, b) => b.total - a.total)} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <XAxis type="number" stroke="#94a3b8" />
+            <YAxis dataKey="checker" type="category" stroke="#94a3b8" width={150} />
+            <Tooltip />
+            <Bar dataKey="total" fill="rgba(251,146,60,0.55)" radius={[0, 8, 8, 0]}>
+              <LabelList dataKey="total" position="right" fill="#e5e7eb" formatter={fmtNumber} />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
 
       <section style={{ ...panel, marginBottom: "30px" }}>
         <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Inventory Cycle Insights</h2>
@@ -366,7 +464,7 @@ function ProductivityPage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "18px" }}>
           <InsightCard title="Main Productivity Driver" text={`${bestShift.shift} concentra o maior volume de posições contadas no recorte atual, indicando maior capacidade operacional nesse turno.`} />
-          <InsightCard title="Top Performer Impact" text={`${topChecker.checker} é o maior destaque individual, com ${fmtNumber(topChecker.total)} posições contadas no ciclo.`} />
+          <InsightCard title="Top Performer Impact" text={`${topChecker?.checker || "-"} é o maior destaque individual, com ${fmtNumber(topChecker?.total || 0)} posições contadas no ciclo.`} />
           <InsightCard title="KPI Interference" text="Produtividade de ciclo influencia diretamente Counting Coverage, IRDR e Wrongly Count. Alta produtividade sem qualidade pode aumentar divergências de estoque." />
           <InsightCard title="Warehouse Specialist Insight" text="O ideal é balancear volume contado com acuracidade. Checkers com alta produção devem ser acompanhados também por taxa de erro." />
         </div>
@@ -375,7 +473,7 @@ function ProductivityPage() {
   );
 }
 
-function ActionPlanSection() {
+function ActionPlanSection({ t }) {
   const actions = [
     { what: "Frente de caixa", why: "Reter pacotes cancelados no packing", where: "Packing", when: "2025-2026", who: "Janus Liu", how: "Inserir bloqueio sistêmico no WMS", status: "Ongoing" },
     { what: "Correção do sistema de etiqueta de transporte", why: "Evitar envio com transportadora incorreta", where: "Sistema / Expedição", when: "Imediato", who: "Janus Liu", how: "Ajuste sistêmico para emissão correta da etiqueta", status: "Ongoing" },
@@ -387,7 +485,7 @@ function ActionPlanSection() {
 
   return (
     <section style={{ ...panel, marginBottom: "30px" }}>
-      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Return to Seller Action Plan</h2>
+      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.actionPlan}</h2>
       <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
         Actions in progress to recover RTS performance and reduce future lost/cancellation risk.
       </p>
@@ -409,10 +507,10 @@ function ActionPlanSection() {
   );
 }
 
-function PredictiveInsights() {
+function PredictiveInsights({ t }) {
   return (
     <section style={{ ...panel, marginBottom: "30px" }}>
-      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>Predictive Warehouse Insights</h2>
+      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.predictive}</h2>
       <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
         Prediction data base · Análise como especialista de warehouse ecommerce · Interferência entre KPIs
       </p>
@@ -509,7 +607,7 @@ function KpiCard({ item, onClick }) {
       </span>
       <p style={{ color: "#cbd5e1", marginTop: "18px", fontSize: "13px" }}>Jan → Selected: {fmt(item.jan)} → {fmt(item.value ?? item.apr)}</p>
       <p style={{ color: deltaGood ? "#22c55e" : "#ef4444", fontSize: "13px", marginTop: "6px" }}>Delta: {deltaGood ? "+" : ""}{fmt(delta)}</p>
-      {item.cluster === "LOST" && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>Using M-2 result</p>}
+      {item.cluster === "LOST" && item.selectedMonth !== "overall" && <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>Using M-2 result</p>}
     </div>
   );
 }
