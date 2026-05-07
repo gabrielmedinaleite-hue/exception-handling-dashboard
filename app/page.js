@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -16,7 +16,6 @@ import {
 
 const baseKpis = [
   { title: "Capital Loss Rate", cluster: "LOST", area: "Loss", target: 0.095, direction: "lower", shifts: { Total: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Morning: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Afternoon: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 }, Night: { overall: 0.025, jan: 0.108, feb: 0.003, mar: 0.001, apr: 0.001 } } },
-
   { title: "Exception Rate", cluster: "EXCEPTION", area: "Receiving", target: 0.96, direction: "lower", shifts: { Total: { overall: 0.45, jan: 0.64, feb: 0.41, mar: 0.47, apr: 0.31 }, Morning: { overall: 0.51, jan: 0.61, feb: 0.44, mar: 0.67, apr: 0.35 }, Afternoon: { overall: 0.41, jan: 0.67, feb: 0.38, mar: 0.37, apr: 0.30 }, Night: { overall: 0.43, jan: 0.63, feb: 0.40, mar: 0.44, apr: 0.30 } } },
   { title: "Empty Box", cluster: "EXCEPTION", area: "Receiving", target: 0.20, direction: "lower", shifts: { Total: { overall: 0.27, jan: 0.45, feb: 0.27, mar: 0.26, apr: 0.14 }, Morning: { overall: 0.29, jan: 0.41, feb: 0.28, mar: 0.39, apr: 0.14 }, Afternoon: { overall: 0.27, jan: 0.47, feb: 0.28, mar: 0.21, apr: 0.14 }, Night: { overall: 0.26, jan: 0.45, feb: 0.25, mar: 0.23, apr: 0.14 } } },
   { title: "Short Picking", cluster: "EXCEPTION", area: "Picking", target: 0.08, direction: "lower", shifts: { Total: { overall: 0.05, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Morning: { overall: 0.05, jan: 0.06, feb: 0.03, mar: 0.07, apr: 0.05 }, Afternoon: { overall: 0.04, jan: 0.05, feb: 0.03, mar: 0.06, apr: 0.05 }, Night: { overall: 0.04, jan: 0.04, feb: 0.04, mar: 0.04, apr: 0.04 } } },
@@ -219,6 +218,7 @@ export default function Dashboard() {
   const [selectedKpiTitle, setSelectedKpiTitle] = useState(null);
   const [chartShift, setChartShift] = useState("Total");
   const [lang, setLang] = useState("en");
+  const [actionStatuses, setActionStatuses] = useState({});
 
   const t = dictionary[lang];
 
@@ -259,6 +259,8 @@ export default function Dashboard() {
             setSelectedKpiTitle={setSelectedKpiTitle}
             setChartShift={setChartShift}
             t={t}
+            actionStatuses={actionStatuses}
+            setActionStatuses={setActionStatuses}
           />
         ) : (
           <ProductivityPage
@@ -285,8 +287,8 @@ export default function Dashboard() {
 
 function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelectedMonth }) {
   return (
-    <section style={{ display: "flex", gap: "22px", alignItems: "center", flexWrap: "wrap", marginBottom: "28px" }}>
-      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+    <section style={{ display: "flex", gap: "22px", alignItems: "center", marginBottom: "28px" }}>
+      <div style={{ display: "flex", gap: "10px" }}>
         {shifts.map((shift) => (
           <Button key={shift} active={selectedShift === shift} onClick={() => setSelectedShift(shift)}>
             {shift}
@@ -296,7 +298,7 @@ function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelected
 
       <div style={{ width: "1px", height: "30px", background: "#334155" }} />
 
-      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "10px" }}>
         {months.map((month) => (
           <Button
             key={month.key}
@@ -312,7 +314,7 @@ function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelected
   );
 }
 
-function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, setSelectedMonth, setSelectedKpiTitle, setChartShift, t }) {
+function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, setSelectedMonth, setSelectedKpiTitle, setChartShift, t, actionStatuses, setActionStatuses }) {
   const onTrack = kpis.filter((k) => getStatus(k) === "On Track").length;
   const attention = kpis.length - onTrack;
 
@@ -400,7 +402,7 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
         </Table>
       </section>
 
-      <ActionPlanSection t={t} />
+      <ActionPlanSection t={t} actionStatuses={actionStatuses} setActionStatuses={setActionStatuses} />
       <PredictiveInsights t={t} />
     </>
   );
@@ -441,7 +443,7 @@ function ProductivityPage({ selectedShift, setSelectedShift, selectedMonth, setS
         setSelectedMonth={setSelectedMonth}
       />
 
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "14px", marginBottom: "30px" }}>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "30px" }}>
         <TopCard title={t.totalLocations} value={fmtNumber(totalLocations)} color="#38bdf8" />
         <TopCard title={t.totalCheckers} value={totalCheckers} color="#22c55e" />
         <TopCard title={t.bestShift} value={bestShift.shift} color="#f59e0b" />
@@ -495,7 +497,7 @@ function ProductivityPage({ selectedShift, setSelectedShift, selectedMonth, setS
           Análise executiva da produtividade de inventário.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "18px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }}>
           <InsightCard title="Main Productivity Driver" text={`${bestShift.shift} concentra o maior volume de posições contadas no recorte atual, indicando maior capacidade operacional nesse turno.`} />
           <InsightCard title="Top Performer Impact" text={`${topChecker?.checker || "-"} é o maior destaque individual, com ${fmtNumber(topChecker?.total || 0)} posições contadas no ciclo.`} />
           <InsightCard title="KPI Interference" text="Produtividade de ciclo influencia diretamente Counting Coverage, IRDR e Wrongly Count. Alta produtividade sem qualidade pode aumentar divergências de estoque." />
@@ -506,7 +508,7 @@ function ProductivityPage({ selectedShift, setSelectedShift, selectedMonth, setS
   );
 }
 
-function ActionPlanSection({ t }) {
+function ActionPlanSection({ t, actionStatuses, setActionStatuses }) {
   const actions = [
     { what: "Frente de caixa", why: "Reter pacotes cancelados no packing", where: "Packing", when: "2025-2026", who: "Janus Liu", how: "Inserir bloqueio sistêmico no WMS", status: "Ongoing" },
     { what: "Correção do sistema de etiqueta de transporte", why: "Evitar envio com transportadora incorreta", where: "Sistema / Expedição", when: "Imediato", who: "Janus Liu", how: "Ajuste sistêmico para emissão correta da etiqueta", status: "Ongoing" },
@@ -516,25 +518,55 @@ function ActionPlanSection({ t }) {
     { what: "Pacotes sorted já coletados", why: "Provável bug sistêmico", where: "Sistema / WMS", when: "Imediato", who: "Laisla e Klebio", how: "Fazer shipping dos pacotes que já tiveram movimentação", status: "Ongoing" },
   ];
 
+  function nextStatus(current) {
+    if (current === "On Track") return "Ongoing";
+    if (current === "Ongoing") return "Delayed";
+    return "On Track";
+  }
+
+  function handleStatusClick(actionName, defaultStatus) {
+    const currentStatus = actionStatuses[actionName] || defaultStatus;
+    setActionStatuses({
+      ...actionStatuses,
+      [actionName]: nextStatus(currentStatus),
+    });
+  }
+
   return (
     <section style={{ ...panel, marginBottom: "30px" }}>
       <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.actionPlan}</h2>
       <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-        Actions in progress to recover RTS performance and reduce future lost/cancellation risk.
+        Click the status badge to update: On Track → Ongoing → Delayed.
       </p>
 
       <Table headers={["What", "Why", "Where", "When", "Who", "How", "Status"]}>
-        {actions.map((row) => (
-          <tr key={row.what} style={{ borderTop: "1px solid #1e293b" }}>
-            <td style={td}>{row.what}</td>
-            <td style={td}>{row.why}</td>
-            <td style={td}>{row.where}</td>
-            <td style={td}>{row.when}</td>
-            <td style={td}>{row.who}</td>
-            <td style={td}>{row.how}</td>
-            <td style={td}><StatusBadge status={row.status} /></td>
-          </tr>
-        ))}
+        {actions.map((row) => {
+          const currentStatus = actionStatuses[row.what] || row.status;
+
+          return (
+            <tr key={row.what} style={{ borderTop: "1px solid #1e293b" }}>
+              <td style={td}>{row.what}</td>
+              <td style={td}>{row.why}</td>
+              <td style={td}>{row.where}</td>
+              <td style={td}>{row.when}</td>
+              <td style={td}>{row.who}</td>
+              <td style={td}>{row.how}</td>
+              <td style={td}>
+                <button
+                  onClick={() => handleStatusClick(row.what, row.status)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    padding: 0,
+                    cursor: "pointer",
+                  }}
+                >
+                  <StatusBadge status={currentStatus} />
+                </button>
+              </td>
+            </tr>
+          );
+        })}
       </Table>
     </section>
   );
@@ -548,7 +580,7 @@ function PredictiveInsights({ t }) {
         Prediction data base · Análise como especialista de warehouse ecommerce · Interferência entre KPIs
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "18px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "18px" }}>
         <InsightCard title="Prediction Analysis" text="A previsão operacional deve observar a combinação de SLA, Lost e Exception. Quando SLA cai e overdue cresce, existe tendência de aumento futuro em cancelamento e lost." />
         <InsightCard title="KPI Interference" text="Overdue Consolidation Package interfere diretamente em Cancellation Rate e Lost Rate. O efeito normalmente aparece com defasagem operacional, por isso o LOST usa M-2." />
         <InsightCard title="Warehouse Specialist Insight" text="Exception Rate, Empty Box e Short Picking impactam o fluxo de packing e podem gerar backlog, retrabalho e perda de produtividade no downstream." />
@@ -570,7 +602,7 @@ function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
           <button onClick={close} style={closeButton}>Close</button>
         </div>
 
-        <section style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
+        <section style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
           {shifts.map((shift) => <Button key={shift} active={chartShift === shift} onClick={() => setChartShift(shift)}>{shift}</Button>)}
         </section>
 
@@ -609,7 +641,7 @@ function SideButton({ active, onClick, children }) {
 
 function Button({ active, onClick, children, color = "#fb923c" }) {
   return (
-    <button onClick={onClick} style={{ background: active ? color : "#0f172a", color: active ? "#020617" : "#cbd5e1", border: active ? `1px solid ${color}` : "1px solid #1e293b", borderRadius: "999px", padding: "10px 18px", fontWeight: "bold", cursor: "pointer" }}>
+    <button onClick={onClick} style={{ background: active ? color : "#0f172a", color: active ? "#020617" : "#cbd5e1", border: active ? `1px solid ${color}` : "1px solid #1e293b", borderRadius: "999px", padding: "10px 18px", fontWeight: "bold", cursor: "pointer", whiteSpace: "nowrap" }}>
       {children}
     </button>
   );
