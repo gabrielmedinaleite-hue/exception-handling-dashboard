@@ -324,6 +324,7 @@ function ScorecardPage({
   setSelectedKpiTitle,
   setChartShift,
   t,
+  lang, // 👈 ADICIONA ISSO
   actionStatuses,
   setActionStatuses
 }) {
