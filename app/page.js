@@ -251,17 +251,18 @@ export default function Dashboard() {
       <main style={{ flex: 1, padding: "34px" }}>
         {activePage === "scorecard" ? (
           <ScorecardPage
-            kpis={kpis}
-            selectedShift={selectedShift}
-            setSelectedShift={setSelectedShift}
-            selectedMonth={selectedMonth}
-            setSelectedMonth={setSelectedMonth}
-            setSelectedKpiTitle={setSelectedKpiTitle}
-            setChartShift={setChartShift}
-            t={t}
-            actionStatuses={actionStatuses}
-            setActionStatuses={setActionStatuses}
-          />
+  kpis={kpis}
+  selectedShift={selectedShift}
+  setSelectedShift={setSelectedShift}
+  selectedMonth={selectedMonth}
+  setSelectedMonth={setSelectedMonth}
+  setSelectedKpiTitle={setSelectedKpiTitle}
+  setChartShift={setChartShift}
+  t={t}
+  lang={lang}
+  actionStatuses={actionStatuses}
+  setActionStatuses={setActionStatuses}
+/>
         ) : (
           <ProductivityPage
             selectedShift={selectedShift}
@@ -314,7 +315,18 @@ function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelected
   );
 }
 
-function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, setSelectedMonth, setSelectedKpiTitle, setChartShift, t, actionStatuses, setActionStatuses }) {
+function ScorecardPage({
+  kpis,
+  selectedShift,
+  setSelectedShift,
+  selectedMonth,
+  setSelectedMonth,
+  setSelectedKpiTitle,
+  setChartShift,
+  t,
+  actionStatuses,
+  setActionStatuses
+}) {
   const onTrack = kpis.filter((k) => getStatus(k) === "On Track").length;
   const attention = kpis.length - onTrack;
 
