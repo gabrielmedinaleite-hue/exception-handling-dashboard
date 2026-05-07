@@ -403,7 +403,7 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
       </section>
 
       <ActionPlanSection t={t} actionStatuses={actionStatuses} setActionStatuses={setActionStatuses} />
-      <PredictiveInsights t={t} lang={lang} />
+      <PredictiveInsights t={t} />
     </>
   );
 }
