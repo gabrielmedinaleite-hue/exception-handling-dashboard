@@ -403,7 +403,7 @@ function ScorecardPage({ kpis, selectedShift, setSelectedShift, selectedMonth, s
       </section>
 
       <ActionPlanSection t={t} actionStatuses={actionStatuses} setActionStatuses={setActionStatuses} />
-      <PredictiveInsights t={t} />
+      <PredictiveInsights t={t} lang={lang} />
     </>
   );
 }
@@ -572,115 +572,110 @@ function ActionPlanSection({ t, actionStatuses, setActionStatuses }) {
   );
 }
 
-function PredictiveInsights({ t }) {
+function PredictiveInsights({ t, lang }) {
+  const isPT = lang === "pt";
+
   return (
     <section style={{ ...panel, marginBottom: "30px" }}>
-      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>{t.predictive}</h2>
+      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+        {t.predictive}
+      </h2>
 
       <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
-        Prediction data base · Preventive operation control · KPI interference · Capture curve recommendation
+        {isPT
+          ? "Base preditiva operacional · Controle preventivo · Interferência entre KPIs · Curvas de captura"
+          : "Prediction data base · Preventive operation control · KPI interference · Capture curves"}
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px", marginBottom: "24px" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "18px",
+          marginBottom: "24px",
+        }}
+      >
         <InsightCard
-          title="1. Capture Curve Control"
-          text="Create a capture curve by process hour to predict how much volume should already be processed at each checkpoint. Suggested checkpoints: 2h, 4h, 8h, 12h and 24h. If actual capture is below the expected curve, trigger early action before backlog becomes overdue."
+          title={isPT ? "1. Curva de Captura" : "1. Capture Curve Control"}
+          text={
+            isPT
+              ? "Criar curvas de captura por hora operacional para prever quanto volume deveria ter sido processado em cada checkpoint. Sugestão: 2h, 4h, 8h, 12h e 24h. Se o realizado estiver abaixo da curva esperada, o sistema deve acionar plano preventivo antes de virar overdue."
+              : "Create a capture curve by process hour to predict how much volume should already be processed at each checkpoint. Suggested checkpoints: 2h, 4h, 8h, 12h and 24h. If actual capture is below the expected curve, trigger early action before backlog becomes overdue."
+          }
         />
 
         <InsightCard
-          title="2. Early Warning for Lost"
-          text="Lost should not be managed only after cancellation. Use leading indicators: Overdue Consolidation, Package Cancellation Rate and Return to Seller. If Overdue increases for 2 consecutive weeks, the dashboard should flag future Lost risk even before the Lost KPI moves."
+          title={isPT ? "2. Alerta Antecipado de Lost" : "2. Early Warning for Lost"}
+          text={
+            isPT
+              ? "Lost não deve ser gerenciado apenas após o cancelamento. Utilizar Overdue, Cancellation Rate e Return to Seller como indicadores antecedentes. Se o overdue aumentar por duas semanas consecutivas, o dashboard deve sinalizar risco futuro de Lost antes do indicador final deteriorar."
+              : "Lost should not be managed only after cancellation. Use leading indicators: Overdue Consolidation, Package Cancellation Rate and Return to Seller. If Overdue increases for 2 consecutive weeks, the dashboard should flag future Lost risk even before the Lost KPI moves."
+          }
         />
 
         <InsightCard
-          title="3. Target Review Recommendation"
-          text="For indicators structurally below target, such as Return to Seller 2D, create a recovery target curve instead of a fixed target only. Example: current 40–50%, short-term target 60%, mid-term 75%, final target 95%. This avoids unrealistic governance and gives clear recovery milestones."
+          title={isPT ? "3. Revisão Inteligente de Meta" : "3. Target Review Recommendation"}
+          text={
+            isPT
+              ? "Para indicadores estruturalmente abaixo da meta, como Return to Seller 2D, criar curva de recuperação progressiva ao invés de apenas meta fixa. Exemplo: 50% → 60% → 75% → 95%. Isso gera governança mais realista e milestones claros."
+              : "For indicators structurally below target, such as Return to Seller 2D, create a recovery target curve instead of a fixed target only. Example: current 40–50%, short-term target 60%, mid-term 75%, final target 95%."
+          }
         />
 
         <InsightCard
-          title="4. Systemic Improvements"
-          text="Prioritize system blocks over manual control. Examples: block shipping for cancelled packages, WMS alert for packages close to overdue, mandatory scan validation before handover, and automatic exception queue when package status has no movement for more than X hours."
+          title={isPT ? "4. Melhorias Sistêmicas" : "4. Systemic Improvements"}
+          text={
+            isPT
+              ? "Priorizar bloqueios sistêmicos ao invés de controles manuais. Exemplos: bloquear shipping de pacotes cancelados, alertas automáticos de aging, validação obrigatória de scan antes do handover e fila automática de exception quando não houver movimentação do pacote."
+              : "Prioritize system blocks over manual control. Examples: block shipping for cancelled packages, WMS alert for packages close to overdue, mandatory scan validation before handover, and automatic exception queue when package status has no movement."
+          }
         />
 
         <InsightCard
-          title="5. KPI Interference Map"
-          text="Exception Rate, Empty Box and Short Picking are upstream indicators. When they increase, they generate rework and instability in Packing. Packing instability can increase Miss Packing, Mis-ship Rate, tickets, cancellation and finally Lost."
+          title={isPT ? "5. Interferência entre KPIs" : "5. KPI Interference Map"}
+          text={
+            isPT
+              ? "Exception Rate, Empty Box e Short Picking são indicadores upstream. Quando aumentam, geram retrabalho no Packing, impactando Miss Packing, Mis-ship, tickets, cancelamentos e Lost."
+              : "Exception Rate, Empty Box and Short Picking are upstream indicators. When they increase, they generate rework and instability in Packing. Packing instability can increase Miss Packing, Mis-ship Rate, tickets, cancellation and finally Lost."
+          }
         />
 
         <InsightCard
-          title="6. Preventive Shift Management"
-          text="Build a shift-level preventive trigger. If Afternoon or Night shows higher deviation versus target, the system should recommend extra audit, dedicated checker allocation, or support from the best-performing shift before the next operational cutoff."
+          title={isPT ? "6. Gestão Preventiva por Turno" : "6. Preventive Shift Management"}
+          text={
+            isPT
+              ? "Criar gatilhos preventivos por turno. Se Afternoon ou Night apresentarem desvios elevados, o sistema deve recomendar auditorias extras, reforço de checker ou suporte do melhor turno antes do cutoff operacional."
+              : "Build a shift-level preventive trigger. If Afternoon or Night shows higher deviation versus target, the system should recommend extra audit, dedicated checker allocation, or support from the best-performing shift."
+          }
         />
 
         <InsightCard
-          title="7. SLA Degradation Prediction"
-          text="On Time Delivery 15H is the earliest SLA signal. If 15H drops while 1D is still close to target, there is an opportunity to recover the operation before 1D and 2D are impacted. Treat 15H as the main preventive KPI."
+          title={isPT ? "7. Predição de Degradação de SLA" : "7. SLA Degradation Prediction"}
+          text={
+            isPT
+              ? "O SLA 15H é o indicador preventivo mais antecipado. Se ele cair enquanto 1D e 2D ainda estiverem estáveis, existe oportunidade de recuperação antes do impacto ao cliente."
+              : "On Time Delivery 15H is the earliest SLA signal. If 15H drops while 1D is still close to target, there is an opportunity to recover the operation before 1D and 2D are impacted."
+          }
         />
 
         <InsightCard
-          title="8. Inventory Accuracy Prevention"
-          text="For inventory, high productivity must be compared with Wrongly Count and IRDR. If a checker has high volume but the shift IRDR increases, productivity may be generating hidden quality risk. Add a quality-adjusted productivity ranking."
+          title={isPT ? "8. Qualidade x Produtividade" : "8. Inventory Accuracy Prevention"}
+          text={
+            isPT
+              ? "Produtividade alta deve ser comparada com Wrongly Count e IRDR. Se um checker produzir muito mas aumentar divergências, existe risco oculto de qualidade."
+              : "For inventory, high productivity must be compared with Wrongly Count and IRDR. If a checker has high volume but the shift IRDR increases, productivity may be generating hidden quality risk."
+          }
         />
 
         <InsightCard
-          title="9. Recommended Prediction Logic"
-          text="Use a simple predictive rule: Risk Score = SLA Gap + Overdue Gap + Cancellation Gap + Exception Gap. When the score increases for 2 weeks, open preventive action automatically with owner, deadline and expected impact."
+          title={isPT ? "9. Score Preditivo de Risco" : "9. Recommended Prediction Logic"}
+          text={
+            isPT
+              ? "Criar score preditivo: Risk Score = Gap SLA + Gap Overdue + Gap Cancellation + Gap Exception. Se o score piorar por 2 semanas consecutivas, abrir automaticamente plano preventivo."
+              : "Use a simple predictive rule: Risk Score = SLA Gap + Overdue Gap + Cancellation Gap + Exception Gap."
+          }
         />
       </div>
-
-      <section style={{ background: "#020617", border: "1px solid #1e293b", borderRadius: "18px", padding: "22px" }}>
-        <h3 style={{ marginTop: 0, color: "#38bdf8", fontSize: "20px" }}>
-          Suggested Preventive Governance
-        </h3>
-
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px", marginTop: "16px" }}>
-          <thead>
-            <tr style={{ color: "#94a3b8", textAlign: "left" }}>
-              <th style={th}>Trigger</th>
-              <th style={th}>Risk</th>
-              <th style={th}>Preventive Action</th>
-              <th style={th}>Expected Impact</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr style={{ borderTop: "1px solid #1e293b" }}>
-              <td style={td}>15H SLA below target for 2 weeks</td>
-              <td style={td}>Future 1D / 2D SLA degradation</td>
-              <td style={td}>Add hourly capture curve and prioritize aging packages</td>
-              <td style={td}>Recover SLA before customer impact</td>
-            </tr>
-
-            <tr style={{ borderTop: "1px solid #1e293b" }}>
-              <td style={td}>Overdue Consolidation increasing</td>
-              <td style={td}>Higher cancellation and lost risk</td>
-              <td style={td}>Create aging bucket: 2h, 4h, 8h, 12h, 24h+</td>
-              <td style={td}>Reduce backlog conversion into lost</td>
-            </tr>
-
-            <tr style={{ borderTop: "1px solid #1e293b" }}>
-              <td style={td}>Return to Seller below recovery curve</td>
-              <td style={td}>Accumulated cancelled packages</td>
-              <td style={td}>Dedicated RTS owner by shift and daily target</td>
-              <td style={td}>Increase return speed and reduce capital loss</td>
-            </tr>
-
-            <tr style={{ borderTop: "1px solid #1e293b" }}>
-              <td style={td}>Wrongly Count rising with high productivity</td>
-              <td style={td}>Inventory quality deterioration</td>
-              <td style={td}>Apply quality-adjusted productivity ranking</td>
-              <td style={td}>Protect IRDR while keeping high output</td>
-            </tr>
-
-            <tr style={{ borderTop: "1px solid #1e293b" }}>
-              <td style={td}>Miss Packing or Mis-ship increase</td>
-              <td style={td}>Tickets and customer complaints</td>
-              <td style={td}>Mandatory scan validation + packing audit sampling</td>
-              <td style={td}>Reduce downstream tickets and rework</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
     </section>
   );
 }
