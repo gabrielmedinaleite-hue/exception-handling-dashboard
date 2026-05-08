@@ -350,15 +350,16 @@ function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelected
     <section
   style={{
     position: "sticky",
-    top: "120px",
+    top: "78px",
     zIndex: 999,
-    background: "#020617",
+    background: "rgba(2, 6, 23, 0.92)",
+    backdropFilter: "blur(10px)",
     display: "flex",
     gap: "22px",
     alignItems: "center",
     marginBottom: "28px",
-    padding: "14px 0",
-    borderBottom: "1px solid #1e293b",
+    padding: "12px 0",
+    borderBottom: "1px solid rgba(30,41,59,0.7)",
   }}
 >
       <div style={{ display: "flex", gap: "10px" }}>
