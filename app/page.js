@@ -75,13 +75,14 @@ const months = [
   { key: "feb", label: "Fev" },
   { key: "mar", label: "Mar" },
   { key: "apr", label: "Abr" },
+  { key: "w19", label: "Week 18" },
   { key: "w18", label: "Week 18" },
   { key: "w17", label: "Week 17" },
   { key: "w16", label: "Week 16" },
   { key: "w15", label: "Week 15" },
 ];
 
-const weeklyKeys = ["w18", "w17", "w16", "w15"];
+const weeklyKeys = ["w19", "w18", "w17", "w16", "w15"];
 
 function getWeeklyValue(data, selectedMonth) {
   const start = data.mar ?? data.overall ?? 0;
@@ -89,9 +90,10 @@ function getWeeklyValue(data, selectedMonth) {
 
   const weeklyMap = {
     w15: start,
-    w16: start + (end - start) * 0.33,
-    w17: start + (end - start) * 0.66,
-    w18: end,
+    w16: start + (end - start) * 0.25,
+    w17: start + (end - start) * 0.50,
+    w18: start + (end - start) * 0.75,
+    w19: end,
   };
 
   return Number(weeklyMap[selectedMonth].toFixed(3));
@@ -716,6 +718,7 @@ function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
               { month: "Week 16", value: getWeeklyValue(selectedKpi, "w16"), target: selectedKpi.target },
               { month: "Week 17", value: getWeeklyValue(selectedKpi, "w17"), target: selectedKpi.target },
               { month: "Week 18", value: getWeeklyValue(selectedKpi, "w18"), target: selectedKpi.target },
+              { month: "Week 19", value: getWeeklyValue(selectedKpi, "w18"), target: selectedKpi.target },
             ]}
             margin={{ top: 30, right: 30, left: 10, bottom: 10 }}
           >
