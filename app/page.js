@@ -112,8 +112,8 @@ function buildKpisByShift(shift, selectedMonth) {
     const shiftData = item.shifts[shift];
 
     const value = weeklyKeys.includes(monthKey)
-      ? getWeeklyValue(shiftData, monthKey)
-      : shiftData[monthKey];
+  ? getWeeklyValue(shiftData, monthKey)
+  : shiftData[monthKey] ?? shiftData.apr ?? shiftData.overall ?? 0;
 
     return {
       title: item.title,
@@ -143,7 +143,18 @@ function buildSingleKpi(title, shift) {
 }
 
 function isOnTrack(kpi) {
-  return kpi.direction === "lower" ? kpi.value <= kpi.target : kpi.value >= kpi.target;
+  const value = Number(kpi.value ?? 0);
+  const target = Number(kpi.target ?? 0);
+
+  if (kpi.direction === "lower") {
+    return value <= target;
+  }
+
+  if (kpi.direction === "higher") {
+    return value >= target;
+  }
+
+  return false;
 }
 
 function getStatus(kpi) {
