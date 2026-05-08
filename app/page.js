@@ -718,7 +718,7 @@ function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
               { month: "Week 16", value: getWeeklyValue(selectedKpi, "w16"), target: selectedKpi.target },
               { month: "Week 17", value: getWeeklyValue(selectedKpi, "w17"), target: selectedKpi.target },
               { month: "Week 18", value: getWeeklyValue(selectedKpi, "w18"), target: selectedKpi.target },
-              { month: "Week 19", value: getWeeklyValue(selectedKpi, "w18"), target: selectedKpi.target },
+              { month: "Week 19", value: getWeeklyValue(selectedKpi, "w19"), target: selectedKpi.target },
             ]}
             margin={{ top: 30, right: 30, left: 10, bottom: 10 }}
           >
