@@ -103,6 +103,7 @@ function getWeeklyValue(data, selectedMonth) {
 function getEffectiveMonth(kpi, selectedMonth) {
   if (selectedMonth === "overall") return "overall";
   if (weeklyKeys.includes(selectedMonth)) return selectedMonth;
+  if (selectedMonth === "may") return "may";
   return kpi.cluster === "LOST" ? "mar" : selectedMonth;
 }
 
