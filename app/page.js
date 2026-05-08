@@ -412,14 +412,6 @@ function ScorecardPage({
   return (
     <>
       <header style={{ marginBottom: "28px" }}>
-    top: 0,
-    zIndex: 999,
-    background: "#020617",
-    paddingBottom: "18px",
-    marginBottom: "28px",
-    borderBottom: "1px solid #1e293b",
-  }}
->
         <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · EXCEPTION HANDLING & INVENTORY</p>
         <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>{t.dashboardTitle}</h1>
         <p style={{ color: "#94a3b8", fontSize: "18px" }}>
@@ -523,12 +515,18 @@ function ProductivityPage({ selectedShift, setSelectedShift, selectedMonth, setS
   return (
     <>
       <header style={{ marginBottom: "28px" }}>
-        <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>SHEIN WHA · INVENTORY PRODUCTIVITY</p>
-        <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>{t.productivityTitle}</h1>
-        <p style={{ color: "#94a3b8", fontSize: "18px" }}>
-          {t.productivitySubtitle} · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
-        </p>
-      </header>
+  <p style={{ color: "#fb923c", fontWeight: "bold", letterSpacing: "1px" }}>
+    SHEIN WHA · EXCEPTION HANDLING & INVENTORY
+  </p>
+
+  <h1 style={{ fontSize: "44px", marginBottom: "8px" }}>
+    {t.dashboardTitle}
+  </h1>
+
+  <p style={{ color: "#94a3b8", fontSize: "18px" }}>
+    {t.dashboardSubtitle} · {selectedShift} · {months.find((m) => m.key === selectedMonth)?.label}
+  </p>
+</header>
 
       <FilterBar
         selectedShift={selectedShift}
