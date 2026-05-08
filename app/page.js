@@ -75,7 +75,7 @@ const months = [
   { key: "feb", label: "Fev" },
   { key: "mar", label: "Mar" },
   { key: "apr", label: "Abr" },
-  { key: "w19", label: "Week 18" },
+  { key: "w19", label: "Week 19" },
   { key: "w18", label: "Week 18" },
   { key: "w17", label: "Week 17" },
   { key: "w16", label: "Week 16" },
