@@ -347,38 +347,60 @@ export default function Dashboard() {
 
 function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelectedMonth }) {
   return (
-    <section
-  style={{
-    display: "flex",
-    gap: "22px",
-    alignItems: "center",
-    marginBottom: "28px",
-    padding: "8px 0",
-  }}
->
-      <div style={{ display: "flex", gap: "10px" }}>
-        {shifts.map((shift) => (
-          <Button key={shift} active={selectedShift === shift} onClick={() => setSelectedShift(shift)}>
-            {shift}
-          </Button>
-        ))}
-      </div>
+    <div
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 100,
+        background: "#020617",
+        paddingTop: "12px",
+        paddingBottom: "16px",
+        marginBottom: "28px",
+        borderBottom: "1px solid #1e293b",
+      }}
+    >
+      <section
+        style={{
+          display: "flex",
+          gap: "22px",
+          alignItems: "center",
+          flexWrap: "wrap",
+        }}
+      >
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          {shifts.map((shift) => (
+            <Button
+              key={shift}
+              active={selectedShift === shift}
+              onClick={() => setSelectedShift(shift)}
+            >
+              {shift}
+            </Button>
+          ))}
+        </div>
 
-      <div style={{ width: "1px", height: "30px", background: "#334155" }} />
+        <div
+          style={{
+            width: "1px",
+            height: "30px",
+            background: "#334155",
+          }}
+        />
 
-      <div style={{ display: "flex", gap: "10px" }}>
-        {months.map((month) => (
-          <Button
-            key={month.key}
-            active={selectedMonth === month.key}
-            onClick={() => setSelectedMonth(month.key)}
-            color={weeklyKeys.includes(month.key) ? "#22c55e" : "#38bdf8"}
-          >
-            {month.label}
-          </Button>
-        ))}
-      </div>
-    </section>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          {months.map((month) => (
+            <Button
+              key={month.key}
+              active={selectedMonth === month.key}
+              onClick={() => setSelectedMonth(month.key)}
+              color={weeklyKeys.includes(month.key) ? "#22c55e" : "#38bdf8"}
+            >
+              {month.label}
+            </Button>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 
