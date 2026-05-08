@@ -180,7 +180,51 @@ function fmtNumber(value) {
 function deltaValue(item) {
   return item.direction === "lower" ? item.jan - item.value : item.value - item.jan;
 }
+function getKpiGap(kpi) {
+  if (kpi.direction === "lower") {
+    return kpi.value - kpi.target;
+  }
+  return kpi.target - kpi.value;
+}
 
+function getRiskLevel(kpi) {
+  const gap = getKpiGap(kpi);
+
+  if (gap <= 0) return "Low";
+  if (gap <= kpi.target * 0.15) return "Medium";
+  return "High";
+}
+
+function getTrend(kpi) {
+  const jan = Number(kpi.jan ?? 0);
+  const current = Number(kpi.value ?? 0);
+
+  if (kpi.direction === "lower") {
+    if (current < jan) return "Improving";
+    if (current > jan) return "Worsening";
+    return "Stable";
+  }
+
+  if (current > jan) return "Improving";
+  if (current < jan) return "Worsening";
+  return "Stable";
+}
+
+function getSuggestedOwner(kpi) {
+  if (kpi.cluster === "EXCEPTION") return "Exception Team";
+  if (kpi.cluster === "HANDOVER") return "Handover / Carrier";
+  if (kpi.cluster === "LOST") return "Loss Prevention / RTS";
+  if (kpi.cluster === "INVENTORY") return "Inventory Team";
+  if (kpi.cluster === "SLA") return "Control Tower";
+  if (kpi.cluster === "TICKET") return "Ticket Team";
+  return "Operation";
+}
+
+function getWarehouseHealthScore(kpis) {
+  const total = kpis.length;
+  const onTrack = kpis.filter((kpi) => getStatus(kpi) === "On Track").length;
+  return Math.round((onTrack / total) * 100);
+}
 const dictionary = {
   en: {
     scorecard: "Scorecard",
@@ -375,10 +419,13 @@ function ScorecardPage({
       />
 
       <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 180px)", gap: "14px", marginBottom: "30px" }}>
-        <TopCard title={t.totalKpis} value={kpis.length} color="#38bdf8" />
-        <TopCard title={t.onTrack} value={onTrack} color="#22c55e" />
-        <TopCard title={t.attention} value={attention} color="#f59e0b" />
-      </section>
+  <TopCard title={t.totalKpis} value={kpis.length} color="#38bdf8" />
+  <TopCard title={t.onTrack} value={onTrack} color="#22c55e" />
+  <TopCard title={t.attention} value={attention} color="#f59e0b" />
+</section>
+
+<ExecutiveIntelligenceSection kpis={kpis} />
+        
 
       {clusters.map((cluster) => {
         const clusterKpis = kpis.filter((item) => item.cluster === cluster);
@@ -708,6 +755,130 @@ function PredictiveInsights({ t, lang }) {
   );
 }
 
+function ExecutiveIntelligenceSection({ kpis }) {
+  const healthScore = getWarehouseHealthScore(kpis);
+
+  const riskRanking = [...kpis]
+    .map((kpi) => ({
+      name: kpi.title,
+      gap: Number(getKpiGap(kpi).toFixed(2)),
+      risk: getRiskLevel(kpi),
+      owner: getSuggestedOwner(kpi),
+      trend: getTrend(kpi),
+    }))
+    .filter((item) => item.gap > 0)
+    .sort((a, b) => b.gap - a.gap)
+    .slice(0, 8);
+
+  const heatmapData = kpis.slice(0, 12).map((kpi) => ({
+    kpi: kpi.title.length > 18 ? kpi.title.slice(0, 18) + "..." : kpi.title,
+    Morning: getRiskLevel({ ...kpi, value: kpi.Morning ?? kpi.value }),
+    Afternoon: getRiskLevel({ ...kpi, value: kpi.Afternoon ?? kpi.value }),
+    Night: getRiskLevel({ ...kpi, value: kpi.Night ?? kpi.value }),
+  }));
+
+  const forecastData = kpis
+    .filter((kpi) => getStatus(kpi) === "Attention")
+    .slice(0, 6)
+    .map((kpi) => ({
+      kpi: kpi.title.length > 16 ? kpi.title.slice(0, 16) + "..." : kpi.title,
+      current: Number(kpi.value.toFixed(2)),
+      forecast: Number((kpi.value + getKpiGap(kpi) * 0.25).toFixed(2)),
+    }));
+
+  return (
+    <section style={{ ...panel, marginBottom: "30px" }}>
+      <h2 style={{ fontSize: "28px", marginBottom: "8px" }}>
+        Warehouse Health & Risk Intelligence
+      </h2>
+
+      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>
+        Visão executiva automática com score de saúde, ranking de risco, tendência e previsão preventiva.
+      </p>
+
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "28px" }}>
+        <TopCard title="Warehouse Health Score" value={`${healthScore}%`} color={healthScore >= 80 ? "#22c55e" : "#f59e0b"} />
+        <TopCard title="High Risk KPIs" value={riskRanking.filter((r) => r.risk === "High").length} color="#ef4444" />
+        <TopCard title="Worsening Trend" value={riskRanking.filter((r) => r.trend === "Worsening").length} color="#f59e0b" />
+        <TopCard title="Top Risk Owner" value={riskRanking[0]?.owner || "-"} color="#38bdf8" />
+      </section>
+
+      <section style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px", marginBottom: "28px" }}>
+        <section style={{ ...panel, background: "#020617" }}>
+          <h3 style={{ marginTop: 0 }}>Risk Ranking · Gap vs Target</h3>
+
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={riskRanking} layout="vertical" margin={{ right: 40 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              <XAxis type="number" stroke="#94a3b8" />
+              <YAxis dataKey="name" type="category" stroke="#94a3b8" width={150} />
+              <Tooltip />
+              <Bar dataKey="gap" fill="rgba(248,113,113,0.60)" radius={[0, 8, 8, 0]}>
+                <LabelList dataKey="gap" position="right" fill="#e5e7eb" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+
+        <section style={{ ...panel, background: "#020617" }}>
+          <h3 style={{ marginTop: 0 }}>Forecast Risk · Next Period</h3>
+
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={forecastData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+              <XAxis dataKey="kpi" stroke="#94a3b8" />
+              <YAxis stroke="#94a3b8" />
+              <Tooltip />
+              <Bar dataKey="current" fill="rgba(56,189,248,0.55)" radius={[8, 8, 0, 0]}>
+                <LabelList dataKey="current" position="top" fill="#e5e7eb" />
+              </Bar>
+              <Bar dataKey="forecast" fill="rgba(251,146,60,0.55)" radius={[8, 8, 0, 0]}>
+                <LabelList dataKey="forecast" position="top" fill="#e5e7eb" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+      </section>
+
+      <section style={{ ...panel, background: "#020617" }}>
+        <h3 style={{ marginTop: 0 }}>Operational Risk Heatmap</h3>
+
+        <Table headers={["KPI", "Morning", "Afternoon", "Night"]}>
+          {heatmapData.map((row) => (
+            <tr key={row.kpi} style={{ borderTop: "1px solid #1e293b" }}>
+              <td style={td}>{row.kpi}</td>
+              {["Morning", "Afternoon", "Night"].map((shift) => (
+                <td key={shift} style={td}>
+                  <RiskBadge risk={row[shift]} />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </Table>
+      </section>
+    </section>
+  );
+}
+
+function RiskBadge({ risk }) {
+  const color =
+    risk === "Low" ? "#22c55e" :
+    risk === "Medium" ? "#f59e0b" :
+    "#ef4444";
+
+  return (
+    <span style={{
+      border: `1px solid ${color}`,
+      color,
+      borderRadius: "999px",
+      padding: "6px 12px",
+      fontWeight: "bold",
+      fontSize: "12px",
+    }}>
+      {risk}
+    </span>
+  );
+}
 function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
   return (
     <div onClick={close} style={modalOverlay}>
