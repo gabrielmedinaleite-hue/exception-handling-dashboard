@@ -477,7 +477,10 @@ function ScorecardPage({
       </section>
 
       <ActionPlanSection t={t} actionStatuses={actionStatuses} setActionStatuses={setActionStatuses} />
-          <ExecutiveIntelligenceSection kpis={kpis} />
+          <ExecutiveIntelligenceSection
+  kpis={buildKpisByShift("Total", selectedMonth)}
+  selectedMonth={selectedMonth}
+/>
       <PredictiveInsights t={t} lang={lang} />
     </>
   );
@@ -755,7 +758,7 @@ function PredictiveInsights({ t, lang }) {
   );
 }
 
-function ExecutiveIntelligenceSection({ kpis }) {
+function ExecutiveIntelligenceSection({ kpis, selectedMonth }) {
   const healthScore = getWarehouseHealthScore(kpis);
 
   const riskRanking = [...kpis]
