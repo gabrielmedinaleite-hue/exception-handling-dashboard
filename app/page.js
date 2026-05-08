@@ -75,7 +75,7 @@ const months = [
   { key: "feb", label: "Fev" },
   { key: "mar", label: "Mar" },
   { key: "apr", label: "Abr" },
-  { key: "Mai", label: "Mai" },
+  { key: "may", label: "Mai" },
   { key: "w19", label: "Week 19" },
   { key: "w18", label: "Week 18" },
   { key: "w17", label: "Week 17" },
@@ -709,25 +709,27 @@ function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
         </div>
 
         <section style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-          {shifts.map((shift) => <Button key={shift} active={chartShift === shift} onClick={() => setChartShift(shift)}>{shift}</Button>)}
+          {shifts.map((shift) => (
+            <Button key={shift} active={chartShift === shift} onClick={() => setChartShift(shift)}>
+              {shift}
+            </Button>
+          ))}
         </section>
 
         <ResponsiveContainer width="100%" height={420}>
           <LineChart
             data={[
-              data={[
-  { month: "Jan", value: selectedKpi.jan, target: selectedKpi.target },
-  { month: "Feb", value: selectedKpi.feb, target: selectedKpi.target },
-  { month: "Mar", value: selectedKpi.mar, target: selectedKpi.target },
-  { month: "Apr", value: selectedKpi.apr, target: selectedKpi.target },
-  { month: "May", value: selectedKpi.may || selectedKpi.apr, target: selectedKpi.target },
-
-  { month: "Week 15", value: getWeeklyValue(selectedKpi, "w15"), target: selectedKpi.target },
-  { month: "Week 16", value: getWeeklyValue(selectedKpi, "w16"), target: selectedKpi.target },
-  { month: "Week 17", value: getWeeklyValue(selectedKpi, "w17"), target: selectedKpi.target },
-  { month: "Week 18", value: getWeeklyValue(selectedKpi, "w18"), target: selectedKpi.target },
-  { month: "Week 19", value: getWeeklyValue(selectedKpi, "w19"), target: selectedKpi.target },
-]}
+              { month: "Jan", value: selectedKpi.jan, target: selectedKpi.target },
+              { month: "Feb", value: selectedKpi.feb, target: selectedKpi.target },
+              { month: "Mar", value: selectedKpi.mar, target: selectedKpi.target },
+              { month: "Apr", value: selectedKpi.apr, target: selectedKpi.target },
+              { month: "May", value: selectedKpi.may ?? selectedKpi.apr, target: selectedKpi.target },
+              { month: "Week 15", value: getWeeklyValue(selectedKpi, "w15"), target: selectedKpi.target },
+              { month: "Week 16", value: getWeeklyValue(selectedKpi, "w16"), target: selectedKpi.target },
+              { month: "Week 17", value: getWeeklyValue(selectedKpi, "w17"), target: selectedKpi.target },
+              { month: "Week 18", value: getWeeklyValue(selectedKpi, "w18"), target: selectedKpi.target },
+              { month: "Week 19", value: getWeeklyValue(selectedKpi, "w19"), target: selectedKpi.target },
+            ]}
             margin={{ top: 30, right: 30, left: 10, bottom: 10 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
