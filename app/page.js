@@ -770,8 +770,19 @@ function ExecutiveIntelligenceSection({ kpis }) {
     .sort((a, b) => b.gap - a.gap)
     .slice(0, 8);
 
-  const heatmapData = kpis.slice(0, 12).map((kpi) => ({
-    kpi: kpi.title.length > 18 ? kpi.title.slice(0, 18) + "..." : kpi.title,
+  const heatmapData = kpis
+  .filter(
+    (kpi) =>
+      kpi.title.includes("Return to Seller") ||
+      kpi.title.includes("On Time Delivery") ||
+      kpi.title.includes("Lost") ||
+      kpi.title.includes("Cancellation") ||
+      kpi.title.includes("Exception") ||
+      kpi.title.includes("IRDR")
+  )
+  .slice(0, 16)
+  .map((kpi) => ({
+    kpi: kpi.title,
     Morning: getRiskLevel({ ...kpi, value: kpi.Morning ?? kpi.value }),
     Afternoon: getRiskLevel({ ...kpi, value: kpi.Afternoon ?? kpi.value }),
     Night: getRiskLevel({ ...kpi, value: kpi.Night ?? kpi.value }),
@@ -843,7 +854,8 @@ function ExecutiveIntelligenceSection({ kpis }) {
       <section style={{ ...panel, background: "#020617" }}>
         <h3 style={{ marginTop: 0 }}>Operational Risk Heatmap</h3>
 
-        <Table headers={["KPI", "Morning", "Afternoon", "Night"]}>
+        <div style={{ overflowX: "auto" }}>
+  <Table headers={["KPI", "Morning", "Afternoon", "Night"]}>
           {heatmapData.map((row) => (
             <tr key={row.kpi} style={{ borderTop: "1px solid #1e293b" }}>
               <td style={td}>{row.kpi}</td>
@@ -855,6 +867,7 @@ function ExecutiveIntelligenceSection({ kpis }) {
             </tr>
           ))}
         </Table>
+</div>
       </section>
     </section>
   );
