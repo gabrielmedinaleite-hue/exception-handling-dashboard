@@ -349,16 +349,11 @@ function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelected
   return (
     <section
   style={{
-    position: "sticky",
-    top: 0,
-    zIndex: 999,
-    background: "#020617",
     display: "flex",
     gap: "22px",
     alignItems: "center",
     marginBottom: "28px",
-    padding: "14px 0",
-    borderBottom: "1px solid #1e293b",
+    padding: "8px 0",
   }}
 >
       <div style={{ display: "flex", gap: "10px" }}>
