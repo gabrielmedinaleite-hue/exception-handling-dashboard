@@ -424,7 +424,6 @@ function ScorecardPage({
   <TopCard title={t.attention} value={attention} color="#f59e0b" />
 </section>
 
-<ExecutiveIntelligenceSection kpis={kpis} />
         
 
       {clusters.map((cluster) => {
@@ -478,6 +477,7 @@ function ScorecardPage({
       </section>
 
       <ActionPlanSection t={t} actionStatuses={actionStatuses} setActionStatuses={setActionStatuses} />
+          <ExecutiveIntelligenceSection kpis={kpis} />
       <PredictiveInsights t={t} lang={lang} />
     </>
   );
