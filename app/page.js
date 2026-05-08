@@ -350,7 +350,7 @@ function FilterBar({ selectedShift, setSelectedShift, selectedMonth, setSelected
     <section
   style={{
     position: "sticky",
-    top: "96px",
+    top: "120px",
     zIndex: 999,
     background: "#020617",
     display: "flex",
