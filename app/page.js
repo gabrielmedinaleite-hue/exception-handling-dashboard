@@ -696,7 +696,7 @@ function PredictiveInsights({ t, lang }) {
   );
 }
 
-function KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
+ffunction KpiModal({ selectedKpi, chartShift, setChartShift, close }) {
   return (
     <div onClick={close} style={modalOverlay}>
       <div onClick={(e) => e.stopPropagation()} style={modalBox}>
